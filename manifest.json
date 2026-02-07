@@ -1,0 +1,19 @@
+{
+    "name": "AI powered the COO Agent",
+    "short_name": "COO Agent",
+    "description": "AI powered the COO Agent for bussiness intelligence",
+    "start_url": "/The-COO-Agent/",
+    "display": "standalone",
+    "icons": [
+        {
+            "src": "/The-COO-Agent/icons/icon-512x512.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/The-COO-Agent/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

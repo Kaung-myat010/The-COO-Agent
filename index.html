@@ -1,0 +1,3085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- MODIFIED: Project Title -->
+  <title>ERP Analysis Simulator (EAS) v6.1.0 (COO Edition)</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Myanmar Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Padauk&amp;display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- NEW: SQL.js for SQL Lab -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <!-- NEW: Marked.js for markdown rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.0/marked.min.js"></script>
+  <!-- NEW: jsPDF for PDF Export (Feature 2) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> 
+  <!-- NEW: CodeMirror for SQL Syntax Highlighting (Restored) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/monokai.min.css">
+  <link rel="apple-touch-icon" href="/The COO Agent/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="EAS" href="/The-COO-Agent/icons/icon-512x512.png">
+    <link rel="manifest" href="/The-COO-Agent/manifest.json">
+    <link rel="manifest" href="/The-COO-Agent/sw.js">
+    <link rel="stylesheet" href="/The-COO-Agent/NebulaOS.css">
+    <script src="/The-COO-Agent/app.js"></script>
+    
+
+
+  
+
+
+</head>
+<body>
+
+  <!-- NEW: CodeMirror JS includes (Restored) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+    
+  <!-- Activation Overlay and Modal -->
+  <!-- REMOVED: ACTIVATION OVERLAY HTML -->
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Loading Overlay (MODIFIED) -->
+  <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-content">
+          <div class="loading-spinner"></div>
+          <!-- New element for AI loading text -->
+          <p id="loading-message" class="ai-loading-text" style="color:var(--text-color); margin-top:10px;">Loading...</p> 
+      </div>
+  </div>
+
+  <!-- Custom Confirm Modal (MODIFIED with input field) -->
+  <div class="modal" id="confirm-modal">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h3 class="modal-title" id="confirm-modal-title">Confirm Action</h3>
+                  <button type="button" class="modal-close">×</button>
+              </div>
+              <div class="modal-body">
+                  <div class="confirm-icon">
+                      <i class="fas fa-exclamation-triangle"></i>
+                  </div>
+                  <p id="confirm-modal-message"></p>
+                  <!-- NEW: Placeholder for Optional Input -->
+                  <div class="form-group" id="confirm-modal-input-group" style="display:none; margin-top: 15px;">
+                      <input type="text" id="confirm-modal-input" class="form-control">
+                  </div>
+                  <!-- END NEW: Placeholder for Optional Input -->
+              </div>
+              <div class="modal-footer confirm-buttons">
+                  <button type="button" class="akm-btn akm-btn-secondary" id="confirm-modal-cancel">Cancel</button>
+                  <button type="button" class="akm-btn akm-btn-danger" id="confirm-modal-confirm">Confirm</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <!-- NEW: Decision Support Modal (Feature 5) -->
+  <div class="modal" id="decision-support-modal">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-user-tie"></i> AI SCM Risk & Contingency Planner</h3> <!-- MODIFIED TITLE -->
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="decision-support-content">
+                <!-- Content will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- NEW: ETL Simulation Mapping Modal (Feature 6) -->
+  <div class="modal" id="mapping-modal">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-exchange-alt"></i> ETL Data Mapping</h3>
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Map the **Uploaded File Headers** to the **System Database Fields** for the data type: <strong id="mapping-data-type"></strong></p>
+                <div class="table-responsive table-scroll-container" style="max-height: 400px;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>System Field (Required)</th>
+                                <th>Uploaded File Header</th>
+                                <th>Sample Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mapping-table-body">
+                            <!-- Mapping rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 10px;">Unmapped fields will be imported as extra data in the JSON payload.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="confirm-mapping-btn"><i class="fas fa-check"></i> Confirm & Import</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+<!-- [NEW] Prompt Export Modal (Feature A & B) -->
+<div class="modal" id="prompt-export-modal">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-robot"></i> AI Output Generated</h3>
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.9rem; margin-bottom: 10px;">Copy the generated **Prompt** (for Image) or **VBA Code** (for PPT) below and paste it into your external AI tool (e.g., Midjourney, DALL-E) or PowerPoint's VBA editor.</p>
+                <textarea id="prompt-output-textarea" class="form-control" rows="10" readonly style="resize: none;"></textarea>
+                <p id="prompt-instruction-note" style="font-size: 0.75rem; color: var(--warning-color); margin-top: 10px;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Close</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="copy-prompt-btn"><i class="fas fa-copy"></i> Copy to Clipboard</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- [END NEW] Prompt Export Modal -->
+
+
+  <!-- MODIFIED: Header Title -->
+  <header class="header"> <button class="menu-toggle"><i class="fas fa-bars"></i></button>
+   <!-- MODIFIED: Version Update -->
+   <div class="logo"> <span>The COO Agent<small style="font-size: 0.6rem; color: var(--text-color);"> OpsNexus AI</small></span> <!-- MODIFIED TITLE -->
+   </div>
+   <div class="header-actions"> 
+       <button class="akm-btn akm-btn-warning akm-btn-sm" id="next-month-btn" style="border: 1px solid var(--warning-color);"><i class="fas fa-calendar-alt"></i> Next Month</button>
+       <button class="theme-toggle"><i class="fas fa-moon"></i></button>
+   </div>
+  </header>
+  <div class="app-container">
+   <aside class="sidebar">
+    <ul class="sidebar-menu">
+     
+     <!-- MODIFIED: Menu Group 1 - Main -->
+     <li class="menu-group-container" data-group="main">
+        <div class="menu-title-toggle" data-action="toggle-group" data-target="main"><i class="fas fa-caret-down"></i>Main</div>
+        <ul class="menu-group-body" data-group-body="main" style="max-height: 500px;">
+            <li class="menu-item"><a href="#" class="menu-link active" data-section="home"><i class="fas fa-home"></i><span>Home</span></a></li> <!-- NEW HOME LINK -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="dashboard"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-section="pos"><i class="fas fa-cash-register"></i><span>POS (Retail Sales)</span></a></li> <!-- MODIFIED TITLE -->
+        </ul>
+     </li>
+     
+     <!-- NEW: Financial Management Module 1 -->
+     <li class="menu-group-container" data-group="financials">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="financials"><i class="fas fa-caret-down"></i>Financials</div>
+        <ul class="menu-group-body" data-group-body="financials" style="max-height: 0;">
+            <li class="menu-item"><a href="#" class="menu-link" data-section="finance"><i class="fas fa-dollar-sign"></i><span>Financial P&L Statement</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-section="expenses"><i class="fas fa-wallet"></i><span>Expense Tracker</span></a></li>
+        </ul>
+     </li>
+     <!-- END NEW: Financial Management Module 1 -->
+     
+     <!-- MODIFIED: Menu Group 2 - Manufacturing -->
+     <li class="menu-group-container" data-group="manufacturing">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="manufacturing"><i class="fas fa-caret-down"></i>Manufacturing (Apparel)</div> <!-- MODIFIED TITLE -->
+        <ul class="menu-group-body" data-group-body="manufacturing" style="max-height: 0;">
+            <li class="menu-item"><a href="#" class="menu-link" data-section="bom"><i class="fas fa-cogs"></i><span>BOM (Apparel Recipe) Setup</span></a></li> <!-- MODIFIED TITLE -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="production"><i class="fas fa-industry"></i><span>Production Orders</span></a></li> <!-- NEW PRODUCTION LINK -->
+        </ul>
+     </li>
+     
+     <!-- MODIFIED: Menu Group 3 - SCM & Inventory -->
+     <li class="menu-group-container" data-group="scm">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="scm"><i class="fas fa-caret-down"></i>SCM & Inventory (Apparel)</div> <!-- MODIFIED TITLE -->
+        <ul class="menu-group-body" data-group-body="scm" style="max-height: 0;">
+            <!-- Consolidated: Products & Categories -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="products"><i class="fas fa-tshirt"></i><span>Product (FG/ACC) Setup</span></a></li> <!-- MODIFIED TITLE -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="raw_materials"><i class="fas fa-pallet"></i><span>Fabric & Supplies Setup</span></a></li> <!-- MODIFIED TITLE -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="stock"><i class="fas fa-warehouse"></i><span>Inventory Management (WMS)</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-section="purchase_orders"><i class="fas fa-file-invoice"></i><span>Purchase Order (PO) Mgt</span></a></li> <!-- MODIFIED: Purchase Order Management (Module 2) -->
+        </ul>
+     </li>
+     
+     <!-- MODIFIED: Menu Group 4 - Distribution & Sales -->
+     <li class="menu-group-container" data-group="distribution">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="distribution"><i class="fas fa-caret-down"></i>Distribution & Wholesale</div> <!-- MODIFIED TITLE -->
+        <ul class="menu-group-body" data-group-body="distribution" style="max-height: 0;">
+            <!-- Consolidated: Orders & Customers -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="orders"><i class="fas fa-receipt"></i><span>Orders, Quotes & AR (Wholesale)</span></a></li> <!-- MODIFIED TITLE -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="fleet"><i class="fas fa-shipping-fast"></i><span>Fleet & Logistics</span></a></li> <!-- NEW FLEET/LOGISTICS LINK -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="branches"><i class="fas fa-code-branch"></i><span>POS Branches</span></a></li>
+        </ul>
+     </li>
+     
+     <!-- MODIFIED: Menu Group 5 - Analysis (BI) - RETAINED-->
+     <li class="menu-group-container" data-group="analysis">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="analysis"><i class="fas fa-caret-down"></i>Analysis</div>
+        <ul class="menu-group-body" data-group-body="analysis" style="max-height: 0;">
+            <!-- NEW COO FEATURE: OPI Dashboard -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="opi-dashboard"><i class="fas fa-percent"></i><span>Operational Performance Index</span></a></li>
+            <!-- MODIFIED: Reports replaced with BI group -->
+            <li class="menu-item" id="business-intelligence-menu-item">
+                <a href="#" class="menu-link" data-section="bi-group-dashboard"><i class="fas fa-chart-line"></i><span>Business Intelligence (BI)</span></a>
+                <!-- Sub-menu max-height is controlled by menu-item.active class, not display:block -->
+                <ul class="sub-menu">
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="bi-dashboard"><i class="fas fa-tachometer-alt"></i><span>BI Dashboard</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="sales-analysis"><i class="fas fa-chart-bar"></i><span>Sales Analysis</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="customer-analysis"><i class="fas fa-users"></i><span>Customer Analysis</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="product-analysis"><i class="fas fa-tshirt"></i><span>Product Analysis</span></a></li> <!-- MODIFIED ICON -->
+                </ul>
+            </li>
+            <!-- NEW: Analyst Hub Group (Feature 1-4) -->
+            <li class="menu-item" id="analyst-hub-menu-item">
+                <a href="#" class="menu-link" data-section="analyst-hub-group"><i class="fas fa-user-tie"></i><span>Analyst Hub</span></a>
+                <ul class="sub-menu">
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="data-quality"><i class="fas fa-bug"></i><span>Data Quality Assurance</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="abc-analysis"><i class="fas fa-boxes"></i><span>ABC Inventory Analysis</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="process-mining"><i class="fas fa-clock"></i><span>Process Mining</span></a></li>
+                   <li class="menu-item sub-menu-item"><a href="#" class="menu-link" data-section="audit-trail"><i class="fas fa-history"></i><span>Audit Trail</span></a></li>
+                </ul>
+            </li>
+            <!-- END NEW: Analyst Hub Group -->
+            <li class="menu-item"><a href="#" class="menu-link" data-section="sql-lab"><i class="fas fa-database"></i><span>SQL Lab</span></a></li> 
+            <li class="menu-item"><a href="#" class="menu-link" data-section="ai-analytics"><i class="fas fa-robot"></i><span>AI Analytics</span></a></li> 
+            <li class="menu-item"><a href="#" class="menu-link" data-section="ai-assistant"><i class="fas fa-comments"></i><span>AI Assistant</span></a></li> 
+        </ul>
+     </li>
+     
+     <!-- MODIFIED: Menu Group 6 - Setting -->
+     <li class="menu-group-container" data-group="setting">
+        <div class="menu-title-toggle collapsed" data-action="toggle-group" data-target="setting"><i class="fas fa-caret-down"></i>Setting</div>
+        <ul class="menu-group-body" data-group-body="setting" style="max-height: 0;">
+            <li class="menu-item"><a href="#" class="menu-link" data-section="settings"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-section="about"><i class="fas fa-info-circle"></i><span>About</span></a></li>
+        </ul>
+     </li>
+     
+    </ul>
+   </aside>
+   <main class="main-content">
+    
+    <!-- NEW HOME PAGE SECTION -->
+    <section id="home-section" class="content-section" style="display: block;">
+        <div class="akm-card" style="padding: 30px; margin-top: 0;">
+            <div class="akm-card-header" style="border-bottom: none; margin-bottom: 0;">
+                <h1 class="akm-card-title" style="font-size: 1.8rem;"><i class="fas fa-house-chimney"></i> Welcome Back, Admin!</h1> <!-- MODIFIED TITLE -->
+                <p style="font-size: 0.9rem; opacity: 0.8;">You are logged into the ERP Analysis Simulator (EAS) v6.1.0 (COO Edition).</p> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="row" style="margin-top: 15px;">
+                <div class="col-md-6 col-sm-12">
+                    <div class="akm-card" style="margin-top: 0; border-left: 5px solid var(--primary-color);">
+                        <h3 class="akm-card-title" style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fas fa-calendar-alt"></i> Current System Time</h3>
+                        <p id="home-current-date-time" style="font-size: 1.5rem; font-weight: 700; color: var(--text-emphasis); margin: 0;"></p>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <div class="akm-card" style="margin-top: 0; border-left: 5px solid var(--success-color);">
+                        <h3 class="akm-card-title" style="font-size: 1.1rem; margin-bottom: 10px;"><i class="fas fa-chart-line"></i> Quick Financials (Today)</h3>
+                        <div class="stats-grid" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0;">
+                            <div class="akm-stat-card2" style="padding: 10px;">
+                                <span class="stat-title">Revenue</span>
+                                <span class="stat-value" id="home-today-revenue" style="font-size: 1.2rem;">0 USD</span>
+                            </div>
+                            <div class="akm-stat-card2" style="padding: 10px;">
+                                <span class="stat-title">Net Profit</span>
+                                <span class="stat-value" id="home-today-profit" style="font-size: 1.2rem;">0 USD</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+                <h3 class="akm-card-title"><i class="fas fa-bolt"></i> Quick Actions & Portals</h3>
+            </div>
+            <div class="stats-grid home-grid" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));">
+                <div class="akm-stat-card" data-section-target="pos" style="cursor: pointer; border-left: 5px solid var(--primary-color);">
+                    <span class="stat-icon"><i class="fas fa-cash-register"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">New Retail Sale</span>
+                    <span class="stat-value" style="font-size: 0.8rem; margin: 0; opacity: 0.7;">Start a POS transaction</span>
+                </div>
+                <div class="akm-stat-card" data-section-target="opi-dashboard" style="cursor: pointer; border-left: 5px solid var(--secondary-color);">
+                    <span class="stat-icon"><i class="fas fa-percent"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">OPI Dashboard</span>
+                    <span class="stat-value" id="home-opi-score" style="font-size: 0.8rem; margin: 0; opacity: 0.7; color: var(--success-color);">85 OPI Score</span> <!-- NEW -->
+                </div>
+                <div class="akm-stat-card" data-section-target="production" style="cursor: pointer; border-left: 5px solid var(--secondary-color);">
+                    <span class="stat-icon"><i class="fas fa-industry"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">Apparel Production</span>
+                    <span class="stat-value" id="home-wip-orders" style="font-size: 0.8rem; margin: 0; opacity: 0.7;">0 WIP Orders</span>
+                </div>
+                <div class="akm-stat-card" data-section-target="stock" style="cursor: pointer; border-left: 5px solid var(--warning-color);">
+                    <span class="stat-icon"><i class="fas fa-warehouse"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">Inventory</span>
+                    <span class="stat-value" id="home-stock-alert" style="font-size: 0.8rem; margin: 0; opacity: 0.7; color: var(--danger-color);">0 Low Stock</span>
+                </div>
+                <div class="akm-stat-card" data-section-target="process-mining" style="cursor: pointer; border-left: 5px solid var(--accent-color);">
+                    <span class="stat-icon"><i class="fas fa-clock"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">Process Mining</span>
+                    <span class="stat-value" style="font-size: 0.8rem; margin: 0; opacity: 0.7;">Find Bottlenecks</span>
+                </div>
+                <div class="akm-stat-card" data-section-target="orders" style="cursor: pointer; border-left: 5px solid var(--warning-color);">
+                    <span class="stat-icon"><i class="fas fa-receipt"></i></span>
+                    <span class="stat-title" style="font-size: 1rem;">Wholesale Orders & AR</span>
+                    <span class="stat-value" id="home-pending-orders" style="font-size: 0.8rem; margin: 0; opacity: 0.7;">0 Pending</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="akm-card" style="margin-top: 20px;">
+             <div class="akm-card-header">
+                <h3 class="akm-card-title"><i class="fas fa-bell"></i> Recent Activity Log (Last 5)</h3>
+            </div>
+            <div class="table-responsive table-scroll-container" style="max-height: 200px;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Event Type</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="home-recent-activity">
+                        <!-- Logs rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+    <!-- END NEW HOME PAGE SECTION -->
+    
+    <!-- NEW COO FEATURE: OPI Dashboard Section -->
+    <section id="opi-dashboard-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+            <div class="akm-card-header">
+                <h2 class="akm-card-title"><i class="fas fa-percent"></i> Operational Performance Index (OPI)</h2>
+                <div class="akm-btn-group">
+                    <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="opi-dashboard-summary"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                    <button class="akm-btn akm-btn-primary" id="refresh-opi-dashboard-btn"><i class="fas fa-sync-alt"></i> Recalculate OPI</button>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="akm-card opi-score-card" style="margin-top: 15px; border-left: 5px solid var(--primary-color);">
+                        <h3 class="akm-card-title" style="font-size: 1.1rem; margin-bottom: 0;"><i class="fas fa-chart-area"></i> Overall OPI Score</h3>
+                        <div class="opi-score-value" id="opi-overall-score">0</div>
+                        <p class="opi-summary" id="opi-overall-summary">Score based on a weighted average of operational, inventory, and SCM risk metrics.</p>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="akm-card" style="margin-top: 15px;">
+                        <h3 class="akm-card-title" style="font-size: 1rem; border-bottom: none;"><i class="fas fa-line-chart"></i> OPI Trend (Last 6 Months)</h3>
+                        <div class="chart-container" style="height: 250px;">
+                           <canvas id="opi-trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 class="akm-card-title" style="margin-top: 20px;"><i class="fas fa-sliders-h"></i> Sub-Metrics Breakdown</h3>
+            <div class="stats-grid">
+                <div class="opi-sub-score-card" style="border-left: 5px solid var(--success-color);">
+                    <span class="opi-sub-score-title"><i class="fas fa-rocket"></i> Process Efficiency Score</span>
+                    <span class="opi-sub-score-value good" id="opi-efficiency-score">0%</span>
+                    <span class="opi-summary" id="opi-efficiency-metric">Avg. Order Cycle Time: N/A</span>
+                </div>
+                <div class="opi-sub-score-card" style="border-left: 5px solid var(--warning-color);">
+                    <span class="opi-sub-score-title"><i class="fas fa-warehouse"></i> Inventory Health Score</span>
+                    <span class="opi-sub-score-value danger" id="opi-inventory-score">0%</span>
+                    <span class="opi-summary" id="opi-inventory-metric">Low Stock Items: 0</span>
+                </div>
+                <div class="opi-sub-score-card" style="border-left: 5px solid var(--danger-color);">
+                    <span class="opi-sub-score-title"><i class="fas fa-exclamation-triangle"></i> SCM Risk Score</span>
+                    <span class="opi-sub-score-value warning" id="opi-scm-risk-score">0%</span>
+                    <span class="opi-summary" id="opi-scm-risk-metric">Single Source Suppliers: 0</span>
+                </div>
+            </div>
+            
+             <!-- NEW COO Executive Summary -->
+             <div class="akm-card" style="margin-top: 20px;">
+                <div class="akm-card-header">
+                    <h3 class="akm-card-title"><i class="fas fa-user-tie"></i> COO Executive Briefing (AI Generated)</h3>
+                    <button class="akm-btn akm-btn-info" id="generate-opi-exec-summary-btn"><i class="fas fa-brain"></i> Generate Briefing</button>
+                </div>
+                <div id="opi-executive-briefing" class="akm-card-body">
+                    <p style="margin: 0; font-style: italic;">Click 'Generate Briefing' to get a COO-level interpretation of the OPI scores and trends.</p>
+                </div>
+            </div>
+            
+        </div>
+    </section>
+    <!-- END NEW COO FEATURE: OPI Dashboard Section -->
+
+    
+    <section id="dashboard-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title">Today's Overview</h2>
+       <!-- MODIFIED: Added PPT Prompt button -->
+       <div class="akm-btn-group">
+            <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="dashboard-exec-summary"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+            <button class="akm-btn akm-btn-info akm-btn-sm" id="generate-exec-summary-btn" style="margin-right: 10px;"><i class="fas fa-brain"></i> Generate Executive Summary</button>
+            <button class="akm-btn akm-btn-primary" type="button" id="new-order-btn"><i class="fas fa-plus"></i> New Sale</button>
+       </div>
+      </div>
+      <!-- NEW: Executive Summary Card (Feature 1) -->
+      <div class="akm-card" id="executive-summary-card" style="margin-top: 0; margin-bottom: 15px; display: none;">
+        <div class="akm-card-header" style="border-bottom: none; margin-bottom: 0;">
+            <h3 class="akm-card-title" style="font-size: 1rem;"><i class="fas fa-chart-pie"></i> Executive Summary</h3>
+        </div>
+        <div id="executive-summary-content" class="akm-card-body" style="padding-top: 0;">
+            <p style="margin: 0; font-style: italic;">Summary will appear here...</p>
+        </div>
+      </div>
+      <!-- End NEW: Executive Summary Card -->
+      <!-- stats-grid -->
+      <div class="stats-grid">
+       <div class="akm-stat-card" style="--i:1;"> <span class="stat-title">Cash on Hand</span> <span class="stat-value" id="cash-on-hand">0 USD</span> <span class="stat-icon"><i class="fas fa-piggy-bank"></i></span>
+       </div>
+       <div class="akm-stat-card" style="--i:2;"> <span class="stat-title">Today's Profit <i class="fas fa-question-circle text-info" style="cursor: pointer; opacity: 0.7;" data-action="explain-metric" data-metric="Today's Net Profit" data-context="Revenue from completed orders minus purchase cost of received stock today."></i></span> <span class="stat-value" id="net-profit">0 USD</span> <span class="stat-icon"><i class="fas fa-wallet"></i></span>
+       </div>
+       <div class="akm-stat-card" style="--i:3;"> <span class="stat-title">Pending POs (Fabric/Supplies)</span> <span class="stat-value" id="pending-pos">0</span> <span class="stat-icon"><i class="fas fa-file-invoice"></i></span>
+       </div>
+       <div class="akm-stat-card" style="--i:4;"> <span class="stat-title">Low Stock Items (FG/RM)</span> <span class="stat-value" id="dashboard-low-stock">0</span> <span class="stat-icon"><i class="fas fa-exclamation-triangle"></i></span>
+       </div>
+       <!-- NEW Dashboard Stats -->
+       <div class="akm-stat-card" style="--i:5;"> <span class="stat-title">WIP Production</span> <span class="stat-value" id="dashboard-wip-orders">0</span> <span class="stat-icon"><i class="fas fa-cogs"></i></span>
+       </div>
+       <div class="akm-stat-card" style="--i:6;"> <span class="stat-title">Out for Delivery</span> <span class="stat-value" id="dashboard-out-for-delivery">0</span> <span class="stat-icon"><i class="fas fa-truck-moving"></i></span>
+       </div>
+       <!-- END NEW Dashboard Stats -->
+      </div>
+      <div class="akm-card" style="margin-top: 15px; --i:7;">
+       <div class="akm-card-header">
+        <!-- MODIFIED: Added ERP Tutor Icon (Feature 6) -->
+        <h3 class="akm-card-title">Weekly Sales <i class="fas fa-question-circle text-info" style="cursor: pointer; opacity: 0.7;" data-action="explain-metric" data-metric="Weekly Sales Chart" data-context="A line chart showing total revenue from completed orders over the last 7 simulated days."></i></h3>
+       </div>
+       <div class="chart-container">
+        <canvas id="weekly-sales-chart"></canvas>
+       </div>
+      </div>
+      <!-- NEW: Production Efficiency Chart -->
+      <div class="akm-card" style="margin-top: 15px; --i:8;">
+       <div class="akm-card-header">
+        <h3 class="akm-card-title">Apparel Production Efficiency (Last 7 Days)</h3> <!-- MODIFIED TITLE -->
+       </div>
+       <div class="chart-container">
+        <canvas id="production-efficiency-chart"></canvas>
+       </div>
+      </div>
+      <!-- END NEW: Production Efficiency Chart -->
+     </div>
+    </section>
+    
+    <section id="pos-section" class="content-section" style="display: none;">
+     <div class="row">
+      <div class="col-md-8 col-sm-12">
+       <div class="akm-card">
+        <div class="akm-card-header">
+         <h3 class="akm-card-title" style="font-size: 1rem;">Add Items (Stock Check Active)</h3> <!-- MODIFIED TITLE -->
+         <div class="filter-controls" style="flex-grow: 1; margin-bottom: 0;">
+          <div class="search-box"> <i class="fas fa-search"></i>
+           <input type="text" id="product-search" placeholder="Search or Scan Barcode...">
+          </div> <button class="akm-btn akm-btn-primary barcode-scan-btn" id="toggle-scanner-btn"><i class="fas fa-barcode"></i></button>
+         </div>
+        </div>
+        <div id="barcode-scanner-container"></div>
+        <div class="category-tabs" id="category-tabs">
+        </div>
+        <div class="products-grid-container">
+         <div id="products-grid" class="products-grid">
+          <div class="empty-state"> <i class="fas fa-shopping-basket"></i>
+           <p>Add products to start a new order</p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+      <div class="col-md-4 col-sm-12">
+       <div class="akm-card order-details">
+        <div class="order-header">
+         <h3>Order <span id="current-order-id">-</span></h3>
+         <button type="button" class="akm-btn akm-btn-danger" id="cancel-order-btn" disabled><i class="fas fa-times"></i></button>
+        </div>
+        <!-- FEATURE 1: NEW CUSTOMER DISPLAY UI -->
+        <div id="customer-display" class="customer-select-group">
+            <i class="fas fa-user-circle" style="font-size: 1.5rem; color: var(--secondary-color);"></i>
+            <span id="selected-customer-name">Walk-in Customer</span>
+            <input type="hidden" id="pos-customer-id" value="walk-in">
+            <button class="akm-btn akm-btn-primary akm-btn-sm" type="button" id="select-customer-btn"><i class="fas fa-user-plus"></i> Add/Select Customer</button>
+        </div>
+        <!-- END FEATURE 1 UI -->
+        <!-- WHOLESALE FEATURE: Price Level Selector (MODIFIED TO SWITCH UI) -->
+        <div class="form-group" style="margin-top: -5px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+             <label class="form-label">Price Level</label> 
+             <!-- NEW SWITCH UI -->
+             <div class="customer-type-selector" id="price-level-selector-ui">
+                 <input type="radio" id="price-retail" name="price-type" value="retail" checked>
+                 <label for="price-retail">Retail</label>
+                 <input type="radio" id="price-wholesale" name="price-type" value="wholesale">
+                 <label for="price-wholesale">Wholesale</label>
+             </div>
+        </div>
+        <!-- END WHOLESALE FEATURE -->
+        <div class="order-items">
+         <table class="table">
+          <thead>
+           <tr>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+           </tr>
+          </thead>
+          <tbody id="order-items-list">
+           <tr>
+            <td colspan="4">
+             <div class="empty-state" style="min-height: 50px; padding: 10px;">
+              <p style="font-size: 0.8rem; margin: 0;">No items added</p>
+             </div> </td>
+           </tr>
+          </tbody>
+         </table>
+        </div>
+        <div class="order-summary">
+         <div class="summary-row"> <span class="summary-label">Subtotal:</span> <span class="summary-value" id="order-subtotal">0 USD</span>
+         </div>
+         <div class="summary-row"> <span class="summary-label" id="order-tax-label">Tax (0%):</span> <span class="summary-value" id="order-tax">0 USD</span>
+         </div>
+         <div class="summary-row"> <span class="summary-label">Discount:</span>
+          <input type="number" id="order-discount" class="form-control" value="0" min="0">
+         </div>
+         <div class="summary-row grand-total"> <span class="summary-label">Grand Total:</span> <span class="summary-value" id="order-total">0 USD</span>
+         </div>
+         <div class="form-group" style="margin-top:10px;"> <label for="payment-method" class="form-label">Payment Method</label> <select id="payment-method" class="form-control"> <option value="Cash">Cash</option> <option value="KBZ Pay">KBZ Pay</option> <option value="Credit">Credit/အကြွေး</option> </select>
+         </div>
+         <div class="akm-btn-group" style="justify-content: flex-end; margin-top: 10px;">
+             <!-- MODIFIED: Order Fulfillment Workflow -->
+             <button class="akm-btn akm-btn-info" type="button" id="save-quote-btn" disabled><i class="fas fa-file-invoice"></i> Save as Quote</button>
+             <button class="akm-btn akm-btn-warning" type="button" id="to-production-order-btn" disabled><i class="fas fa-cogs"></i> Prod. Req.</button>
+             <button class="akm-btn akm-btn-primary" type="button" id="save-order-btn" disabled><i class="fas fa-save"></i> Save Pending</button>
+             <button class="akm-btn akm-btn-success" type="button" id="complete-order-btn" disabled><i class="fas fa-check"></i> Complete Sale</button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section>
+    
+    <!-- NEW: Financial Management Section (Module 1) -->
+    <section id="finance-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-dollar-sign"></i> Financial P&L Statement</h2>
+                 <div class="filter-controls">
+                    <!-- MODIFIED: PPT Prompt Button -->
+                    <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="finance-pnl"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                    <select id="pnl-month-filter" class="form-control" style="flex-basis: 150px;"></select>
+                    <select id="pnl-year-filter" class="form-control" style="flex-basis: 150px;"></select>
+                    <button class="akm-btn akm-btn-primary" id="calculate-pnl-btn"><i class="fas fa-calculator"></i> Calculate P&L</button>
+                 </div>
+             </div>
+             <!-- MODIFIED: pnl-summary-card now holds the main P&L UI content -->
+             <div id="pnl-summary-card" class="akm-card-body pnl-statement">
+                 <!-- P&L Statement dynamically generated here -->
+                 <div class="empty-state"><i class="fas fa-chart-line"></i><p>Select a month and click Calculate P&L</p></div>
+             </div>
+             <!-- FEATURE 3: NEW Financial Charts -->
+             <div class="akm-card" style="margin-top: 20px;">
+                 <div class="akm-card-header">
+                     <h3 class="akm-card-title"><i class="fas fa-chart-bar"></i> Weekly Financial Trend (Revenue vs. OPEX)</h3>
+                 </div>
+                 <div class="scrollable-chart-container">
+                     <div class="monthly-chart-wrapper" style="min-width: 600px; height: 300px;">
+                         <canvas id="weekly-financial-chart"></canvas>
+                     </div>
+                 </div>
+             </div>
+             
+             <div class="akm-card" style="margin-top: 20px;">
+                 <div class="akm-card-header">
+                     <h3 class="akm-card-title"><i class="fas fa-chart-line"></i> Monthly Financial Trend (Revenue vs. OPEX)</h3>
+                 </div>
+                 <div class="scrollable-chart-container">
+                     <div class="monthly-chart-wrapper" style="min-width: 600px; height: 300px;">
+                         <canvas id="monthly-financial-chart"></canvas>
+                     </div>
+                 </div>
+             </div>
+             <!-- END FEATURE 3: NEW Financial Charts -->
+         </div>
+    </section>
+
+    <section id="expenses-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-wallet"></i> Expense Tracker (Operational Expenses)</h2>
+                 <button class="akm-btn akm-btn-primary" id="add-new-expense-btn"><i class="fas fa-plus"></i> Add Expense</button>
+             </div>
+             <!-- NEW: Filter Controls for Expense Tracker -->
+             <div class="filter-controls">
+                <select id="expense-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+                    <option value="all" selected>All Time</option>
+                    <option value="daily">Daily</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+                <div id="expense-daily-filter" class="order-filter-group" style="display: none;">
+                    <input type="date" id="expense-date-filter" class="form-control expense-filter">
+                </div>
+                <div id="expense-monthly-filter" class="order-filter-group" style="display: none;">
+                    <select id="expense-month-filter" class="form-control expense-filter"></select>
+                    <select id="expense-year-filter" class="form-control expense-filter"></select>
+                </div>
+             </div>
+             <!-- END NEW: Filter Controls -->
+             <div class="table-responsive table-scroll-container">
+                 <table class="table">
+                     <thead>
+                         <tr>
+                             <th>Date</th>
+                             <th>Category</th>
+                             <th>Description</th>
+                             <th>Amount</th>
+                         </tr>
+                     </thead>
+                     <tbody id="expenses-table-body">
+                         <!-- Expenses rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+    </section>
+    <!-- END NEW: Financial Management Module 1 -->
+
+    <!-- NEW: Manufacturing - BOM Section -->
+    <section id="bom-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-cogs"></i> Bill of Materials (BOM) Setup (Apparel Recipes)</h2> <!-- MODIFIED TITLE -->
+                 <button class="akm-btn akm-btn-primary" id="open-bom-modal-btn"><i class="fas fa-plus"></i> Create BOM</button>
+             </div>
+             <!-- NEW: Filter Controls for BOM -->
+             <div class="filter-controls">
+                <select id="bom-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+                    <option value="all" selected>All Time</option>
+                    <option value="daily">Daily (Last Updated)</option>
+                    <option value="monthly">Monthly (Last Updated)</option>
+                </select>
+                <div id="bom-daily-filter" class="order-filter-group" style="display: none;">
+                    <input type="date" id="bom-date-filter" class="form-control bom-filter">
+                </div>
+                <div id="bom-monthly-filter" class="order-filter-group" style="display: none;">
+                    <select id="bom-month-filter" class="form-control bom-filter"></select>
+                    <select id="bom-year-filter" class="form-control bom-filter"></select>
+                </div>
+             </div>
+             <!-- END NEW: Filter Controls -->
+             <!-- MODIFIED: Removed 'Actions' column header as they are handled by Action Island (clickable-cell) -->
+             <div class="table-responsive table-scroll-container" style="max-height: 500px;">
+                 <table class="table">
+                     <thead>
+                         <tr>
+                             <th>Finished Good</th>
+                             <th>Total Raw Materials</th>
+                             <th>Last Updated</th>
+                             <!-- Removed Actions column header -->
+                         </tr>
+                     </thead>
+                     <tbody id="bom-table">
+                         <!-- BOMs will be rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+    </section>
+    <!-- END NEW: Manufacturing - BOM Section -->
+
+    <!-- NEW: Manufacturing - Production Orders Section -->
+    <section id="production-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-industry"></i> Production Orders (Apparel Manufacturing)</h2> <!-- MODIFIED TITLE -->
+                 <div class="akm-btn-group">
+                    <button class="akm-btn akm-btn-primary" id="open-production-modal-btn"><i class="fas fa-plus"></i> New Production Order</button>
+                 </div>
+             </div>
+             <div class="filter-controls">
+                 <select id="production-status-filter" class="form-control" style="flex-basis: 150px;">
+                     <option value="all">All Statuses</option>
+                     <option value="pending" selected>Pending</option>
+                     <option value="wip">Work-in-Progress</option>
+                     <option value="completed">Completed</option>
+                     <option value="cancelled">Cancelled</option>
+                 </select>
+                 <!-- NEW: Filter Controls for Production Orders -->
+                <select id="production-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+                    <option value="all" selected>All Time</option>
+                    <option value="daily">Daily (Start Date)</option>
+                    <option value="monthly">Monthly (Start Date)</option>
+                </select>
+                <div id="production-daily-filter" class="order-filter-group" style="display: none;">
+                    <input type="date" id="production-date-filter" class="form-control production-filter">
+                </div>
+                <div id="production-monthly-filter" class="order-filter-group" style="display: none;">
+                    <select id="production-month-filter" class="form-control production-filter"></select>
+                    <select id="production-year-filter" class="form-control production-filter"></select>
+                </div>
+                <!-- END NEW: Filter Controls -->
+             </div>
+             <div class="table-responsive table-scroll-container" style="max-height: 500px;">
+                 <table class="table">
+                     <thead>
+                         <tr>
+                             <th>PO ID</th>
+                             <th>Finished Good</th>
+                             <th>Quantity</th>
+                             <th>Status</th>
+                             <th>Start Date</th>
+                             <th class="action-buttons">Action</th>
+                         </tr>
+                     </thead>
+                     <tbody id="production-orders-table">
+                         <!-- Production Orders will be rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+    </section>
+    <!-- END NEW: Manufacturing - Production Orders Section -->
+
+    <!-- NEW: Raw Materials Setup Section -->
+     <section id="raw_materials-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-pallet"></i> Fabric & Supplies Setup (Raw Materials)</h2> <!-- MODIFIED TITLE -->
+                 <div class="akm-btn-group"> <button class="akm-btn akm-btn-primary" type="button" id="add-new-rm-btn"><i class="fas fa-plus"></i> Add Material</button> </div>
+             </div>
+             <div class="filter-controls">
+                <div class="search-box"> <i class="fas fa-search"></i>
+                 <input type="text" id="rm-search-input" placeholder="Search fabric/supplies...">
+                </div> 
+                <select id="rm-category-filter" class="form-control"> <option value="all">All Categories</option> </select>
+             </div>
+             <!-- NEW: AI Analyze Button (Feature 2) -->
+             <div id="ai-analysis-panel-raw-materials-table" class="ai-insight-box" style="display: none; margin-bottom: 15px; border-left: 5px solid var(--accent-color);">
+                <h5 style="color: var(--accent-color); margin-bottom: 5px;"><i class="fas fa-microscope"></i> AI Data Reasoner Insights</h5>
+                <div id="ai-analysis-content-raw-materials-table" style="white-space: pre-wrap;"></div>
+            </div>
+             <div class="akm-btn-group" style="margin-bottom: 15px;">
+                 <button class="akm-btn akm-btn-secondary" data-action="analyze-table" data-table-id="raw-materials-table"><i class="fas fa-microscope"></i> Analyze Table with AI</button>
+             </div>
+             <div class="table-responsive table-scroll-container">
+                 <table class="table" id="raw-materials-table">
+                     <thead>
+                         <tr>
+                             <th>Name</th>
+                             <th>Type</th>
+                             <th>Category</th>
+                             <th>Last Cost</th>
+                         </tr>
+                     </thead>
+                     <tbody id="raw-materials-table-body">
+                         <!-- Raw Materials will be rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+     </section>
+    <!-- END NEW: Raw Materials Setup Section -->
+
+
+    <!-- Consolidated: Products & Categories Section -->
+    <section id="products-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title"><i class="fas fa-tshirt"></i> Product (Finished Goods) & Accessories Setup</h2> <!-- MODIFIED TITLE -->
+      </div>
+
+      <!-- Products List -->
+      <h3 class="akm-card-title" style="margin-top: 20px;">Product List (Finished Goods, Accessories, Packaging)</h3> <!-- MODIFIED TITLE -->
+      <div class="akm-card-header">
+        <div class="akm-btn-group"> <button class="akm-btn akm-btn-primary" type="button" id="add-new-product-btn"><i class="fas fa-plus"></i> Add New Item</button> <!-- MODIFIED TITLE -->
+        </div>
+      </div>
+      <div class="filter-controls">
+       <div class="search-box"> <i class="fas fa-search"></i>
+        <input type="text" id="products-search-input" placeholder="Search products...">
+       </div> <select id="product-category-filter" class="form-control"> <option value="all">All Categories</option> </select>
+      </div>
+      <!-- NEW: AI Analyze Button (Feature 2) -->
+      <div id="ai-analysis-panel-products-table" class="ai-insight-box" style="display: none; margin-bottom: 15px; border-left: 5px solid var(--accent-color);">
+            <h5 class="akm-card-title" style="color: var(--accent-color); margin-bottom: 5px; font-size: 1rem;"><i class="fas fa-microscope"></i> AI Data Reasoner Insights</h5>
+            <div id="ai-analysis-content-products-table" style="white-space: pre-wrap;"></div>
+        </div>
+      <div class="akm-btn-group" style="margin-bottom: 15px;">
+          <button class="akm-btn akm-btn-secondary" data-action="analyze-table" data-table-id="products-table"><i class="fas fa-microscope"></i> Analyze Table with AI</button>
+      </div>
+      <div class="table-responsive table-scroll-container">
+       <table class="table" id="products-table">
+        <thead>
+         <tr>
+          <th>Image</th>
+          <th>Name</th>
+          <th>Type</th> <!-- NEW: Item Type -->
+          <th>Wholesale Price</th>
+          <th>Retail Price</th>
+          <th>Barcode</th>
+         </tr>
+        </thead>
+        <tbody id="products-table-body">
+         <!-- Products -->
+        </tbody>
+       </table>
+      </div>
+      
+      <!-- Categories List (Shared with RM) -->
+       <div class="akm-card" style="margin-top: 20px;">
+        <div class="akm-card-header">
+         <h3 class="akm-card-title"><i class="fas fa-tags"></i> Category List</h3>
+         <div class="akm-btn-group"> <button class="akm-btn akm-btn-primary" type="button" id="add-new-category-btn"><i class="fas fa-plus"></i> Add Category</button>
+         </div>
+        </div>
+        <div class="table-responsive table-scroll-container">
+         <table class="table">
+          <thead>
+           <tr>
+            <th>Name</th>
+            <th>Product Count</th>
+           </tr>
+          </thead>
+          <tbody id="categories-table-body">
+           <!-- Categories -->
+          </tbody>
+         </table>
+        </div>
+      </div>
+     </div>
+    </section>
+
+    <!-- Consolidated: Orders & Customers Section -->
+    <section id="orders-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title"><i class="fas fa-receipt"></i> Wholesale Orders, Quotes & AR</h2> <!-- MODIFIED TITLE -->
+      </div>
+      
+      <!-- Orders List -->
+      <h3 class="akm-card-title" style="margin-top: 20px;">Wholesale Order Management</h3> <!-- MODIFIED TITLE -->
+      <div class="filter-controls">
+       <div class="search-box"> <i class="fas fa-search"></i>
+        <input type="text" id="orders-search-input" placeholder="Search by Order ID or Customer...">
+       </div> 
+       <select id="order-status-filter" class="form-control">
+        <option value="all">All Statuses</option>
+        <option value="quote">Quote</option>
+        <option value="pending">Pending</option>
+        <option value="awaiting-production">Awaiting Production</option> <!-- NEW -->
+        <option value="dispatching">Dispatching</option>
+        <option value="processing">Processing</option>
+        <option value="shipped">Shipped</option>
+        <option value="out-for-delivery">Out for Delivery</option> <!-- NEW -->
+        <option value="delivered">Delivered</option> <!-- NEW -->
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+       </select>
+       <select id="order-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+        <option value="all" selected>All Time</option>
+        <option value="daily">Daily</option>
+        <option value="monthly">Monthly</option>
+       </select>
+       <div id="order-daily-filter" class="order-filter-group" style="display: none;">
+        <input type="date" id="order-date-filter" class="form-control order-filter">
+       </div>
+       <div id="order-monthly-filter" class="order-filter-group" style="display: none;">
+        <select id="order-month-filter" class="form-control order-filter"></select>
+        <select id="order-year-filter" class="form-control order-filter"></select>
+       </div>
+      </div>
+      <!-- NEW: AI Analyze Button (Feature 2) -->
+      <div id="ai-analysis-panel-orders-table" class="ai-insight-box" style="display: none; margin-bottom: 15px; border-left: 5px solid var(--accent-color);">
+            <h5 class="akm-card-title" style="color: var(--accent-color); margin-bottom: 5px; font-size: 1rem;"><i class="fas fa-microscope"></i> AI Data Reasoner Insights</h5>
+            <div id="ai-analysis-content-orders-table" style="white-space: pre-wrap;"></div>
+        </div>
+      <div class="akm-btn-group" style="margin-bottom: 15px;">
+          <button class="akm-btn akm-btn-secondary" data-action="analyze-table" data-table-id="orders-table"><i class="fas fa-microscope"></i> Analyze Table with AI</button>
+      </div>
+      <div class="table-responsive table-scroll-container">
+       <table class="table" id="orders-table">
+        <thead>
+         <tr>
+          <th>Order ID</th>
+          <th>Type</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th class="action-buttons">Status Update</th>
+         </tr>
+        </thead>
+        <tbody id="orders-table-body">
+         <!-- Orders will be rendered here -->
+        </tbody>
+       </table>
+      </div>
+      
+      <!-- Customers List (Accounts Receivable Focus) -->
+      <div class="akm-card" style="margin-top: 20px;">
+        <div class="akm-card-header">
+         <h3 class="akm-card-title"><i class="fas fa-users"></i> Wholesale Customer Accounts & Debt (AR)</h3> <!-- MODIFIED TITLE -->
+         <div class="akm-btn-group"> <button class="akm-btn akm-btn-primary" type="button" id="add-new-customer-btn"><i class="fas fa-plus"></i> Add Customer</button>
+         </div>
+        </div>
+        <div class="filter-controls">
+          <div class="search-box"> <i class="fas fa-search"></i>
+           <input type="text" id="customers-search-input" placeholder="Search by name or phone...">
+          </div>
+        </div>
+        <div class="table-responsive table-scroll-container">
+         <table class="table">
+          <thead>
+           <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Credit Limit</th>
+            <th>Total Debt</th>
+           </tr>
+          </thead>
+          <tbody id="customers-table-body">
+           <!-- Customers -->
+          </tbody>
+         </table>
+        </div>
+      </div>
+     </div>
+    </section>
+
+    <!-- Logistics & Fleet Section (NEW) -->
+     <section id="fleet-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-shipping-fast"></i> Fleet & Logistics Management</h2>
+                 <button class="akm-btn akm-btn-primary" id="open-vehicle-modal-btn"><i class="fas fa-truck"></i> Add Vehicle</button>
+             </div>
+             
+             <!-- Vehicle List -->
+             <h3 class="akm-card-title" style="margin-top: 20px;">Delivery Fleet</h3>
+             <div class="table-responsive table-scroll-container" style="max-height: 250px;">
+                 <table class="table">
+                     <thead>
+                         <tr>
+                             <th>Plate No</th>
+                             <th>Model</th>
+                             <th>Driver Name</th>
+                             <th>Capacity (kg)</th>
+                         </tr>
+                     </thead>
+                     <tbody id="vehicles-table-body">
+                         <!-- Vehicles will be rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+             
+             <!-- Delivery Status Dashboard -->
+             <h3 class="akm-card-title" style="margin-top: 30px;">Active Deliveries</h3>
+             <div class="filter-controls">
+                <select id="delivery-status-filter" class="form-control" style="flex-basis: 150px;">
+                    <option value="all">All Delivery Statuses</option>
+                    <option value="dispatched">Dispatched</option>
+                    <option value="out-for-delivery">Out for Delivery</option>
+                    <option value="delivered">Delivered</option>
+                </select>
+                <select id="delivery-vehicle-filter" class="form-control" style="flex-basis: 150px;">
+                     <option value="all">All Vehicles</option>
+                </select>
+                <!-- NEW: Filter Controls for Fleet & Logistics -->
+                <select id="fleet-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+                    <option value="all" selected>All Time</option>
+                    <option value="daily">Daily (Dispatch)</option>
+                    <option value="monthly">Monthly (Dispatch)</option>
+                </select>
+                <div id="fleet-daily-filter" class="order-filter-group" style="display: none;">
+                    <input type="date" id="fleet-date-filter" class="form-control fleet-filter">
+                </div>
+                <div id="fleet-monthly-filter" class="order-filter-group" style="display: none;">
+                    <select id="fleet-month-filter" class="form-control fleet-filter"></select>
+                    <select id="fleet-year-filter" class="form-control fleet-filter"></select>
+                </div>
+                <!-- END NEW: Filter Controls -->
+             </div>
+             <div class="table-responsive table-scroll-container" style="max-height: 400px;">
+                 <table class="table">
+                     <thead>
+                         <tr>
+                             <th>Order ID</th>
+                             <th>Customer</th>
+                             <th>Vehicle</th>
+                             <th>Driver</th>
+                             <th>Status</th>
+                             <th class="action-buttons">Update Delivery</th>
+                         </tr>
+                     </thead>
+                     <tbody id="delivery-tracking-table-body">
+                         <!-- Active Deliveries will be rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+     </section>
+    <!-- END Logistics & Fleet Section -->
+
+    <!-- MODIFIED: Purchase Orders Section (Module 2) -->
+    <section id="purchase_orders-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title"><i class="fas fa-file-invoice"></i> Material Purchase Order (PO) Mgt</h2> <!-- MODIFIED TITLE -->
+       <div class="akm-btn-group">
+        <button class="akm-btn akm-btn-primary" type="button" id="add-new-po-btn"><i class="fas fa-plus"></i> Create New PO</button>
+       </div>
+      </div>
+      <div class="filter-controls">
+       <select id="po-status-filter" class="form-control" style="flex-basis: 150px; flex-grow: 1;">
+            <option value="all">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="received">Received</option>
+            <option value="paid">Paid</option>
+            <option value="cancelled">Cancelled</option>
+       </select>
+       <!-- NEW: Filter Controls for Purchase Orders -->
+        <select id="po-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+            <option value="all" selected>All Time</option>
+            <option value="daily">Daily (Created Date)</option>
+            <option value="monthly">Monthly (Created Date)</option>
+        </select>
+        <div id="po-daily-filter" class="order-filter-group" style="display: none;">
+            <input type="date" id="po-date-filter" class="form-control po-filter">
+        </div>
+        <div id="po-monthly-filter" class="order-filter-group" style="display: none;">
+            <select id="po-month-filter" class="form-control po-filter"></select>
+            <select id="po-year-filter" class="form-control po-filter"></select>
+        </div>
+        <!-- END NEW: Filter Controls -->
+      </div>
+      <div class="table-responsive table-scroll-container">
+       <table class="table">
+        <thead>
+         <tr>
+          <th>PO ID</th>
+          <th>Supplier</th>
+          <th>Total Cost</th>
+          <th>Date Created</th>
+          <th>Status</th>
+          <th class="action-buttons">Action</th>
+         </tr>
+        </thead>
+        <tbody id="purchase-orders-table-body">
+         <!-- Purchase Orders -->
+        </tbody>
+       </table>
+      </div>
+      
+      <h3 class="akm-card-title" style="margin-top: 20px;">Supplies Receiving Log</h3> <!-- MODIFIED TITLE -->
+      <div class="table-responsive table-scroll-container" style="max-height: 200px;">
+         <table class="table">
+            <thead>
+             <tr>
+              <th>Product Name</th>
+              <th>Quantity Added</th>
+              <th>Unit Cost</th>
+              <th>Date</th>
+             </tr>
+            </thead>
+            <tbody id="stock-receiving-table-body">
+             <!-- Actual Stock Receiving Log (was old Purchases table) -->
+            </tbody>
+         </table>
+      </div>
+     </div>
+    </section>
+    <!-- END MODIFIED: Purchase Orders Section -->
+
+    <section id="stock-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title">Inventory Management (WMS Core)</h2> <!-- MODIFIED TITLE -->
+       <div class="akm-btn-group">
+           <button class="akm-btn akm-btn-info" id="open-stock-transfer-modal-btn"><i class="fas fa-exchange-alt"></i> Stock Transfer</button>
+           <button class="akm-btn akm-btn-success" id="open-stock-count-modal-btn"><i class="fas fa-clipboard-check"></i> Stock Count (V4)</button> <!-- MODIFIED: Removed disabled -->
+       </div>
+      </div>
+      <div class="filter-controls">
+       <div class="search-box"> <i class="fas fa-search"></i>
+        <input type="text" id="stock-search-input" placeholder="Search product name, rack location, or batch...">
+       </div> 
+        <select id="stock-category-filter" class="form-control"> <option value="all">All Categories</option> </select>
+        <select id="stock-item-type-filter" class="form-control"> <option value="all">All Item Types</option> <option value="FG">Finished Goods</option> <option value="RM">Raw Materials</option> <option value="Packaging">Packaging</option> </select> <!-- NEW ITEM TYPE FILTER -->
+        <button class="akm-btn akm-btn-warning" id="filter-low-stock-btn"><i class="fas fa-exclamation-triangle"></i> Show Low Stock Only</button>
+      </div>
+      <!-- NEW FEATURE 2: Smart Restock Advisor -->
+      <div class="akm-card" style="margin-top: 15px;">
+           <div class="akm-card-header">
+               <h3 class="akm-card-title"><i class="fas fa-magic"></i> Smart Restock Advisor (ROP & EOQ)</h3>
+               <button class="akm-btn akm-btn-warning" id="open-restock-advisor-btn"><i class="fas fa-chart-bar"></i> Generate Restock Report</button>
+           </div>
+           <div id="restock-advice-summary" class="akm-card-body" style="padding-top: 0; font-size: 0.9rem;">
+                <p style="margin: 0;">Click 'Generate Restock Report' to analyze the last 30 days of sales against current Reorder Points.</p>
+           </div>
+      </div>
+      <!-- END NEW FEATURE 2 -->
+      
+      <!-- NEW FEATURE 1: Warehouse Layout View -->
+      <div class="warehouse-map-container">
+           <h3 class="akm-card-title" style="margin-top: 0;"><i class="fas fa-map-marked-alt"></i> Warehouse Layout View (Capacity Heatmap)</h3>
+           <div id="warehouse-grid" class="warehouse-grid">
+                <!-- Racks will be generated here by JS -->
+           </div>
+      </div>
+      <!-- END NEW FEATURE 1 -->
+
+      <!-- NEW: AI Analyze Button (Feature 2) -->
+      <div id="ai-analysis-panel-stock-table" class="ai-insight-box" style="display: none; margin-bottom: 15px; border-left: 5px solid var(--accent-color);">
+            <h5 class="akm-card-title" style="color: var(--accent-color); margin-bottom: 5px; font-size: 1rem;"><i class="fas fa-microscope"></i> AI Data Reasoner Insights</h5>
+            <div id="ai-analysis-content-stock-table" style="white-space: pre-wrap;"></div>
+        </div>
+      <div class="akm-btn-group" style="margin-bottom: 15px;">
+          <button class="akm-btn akm-btn-secondary" data-action="analyze-table" data-table-id="stock-table"><i class="fas fa-microscope"></i> Analyze Table with AI</button>
+      </div>
+      <div class="table-responsive table-scroll-container">
+       <table class="table" id="stock-table">
+        <thead>
+         <tr>
+          <th>Product Name</th>
+          <th>Type</th>
+          <th>Batch/Expiry</th> <!-- MODIFIED -->
+          <th>Rack Location</th>
+          <th>Quantity</th>
+          <th class="action-buttons">Actions</th>
+         </tr>
+        </thead>
+        <tbody id="stock-table-body">
+         <!-- Stock will be grouped by product and location -->
+        </tbody>
+       </table>
+      </div>
+      
+      <!-- Overall Low Stock Threshold Card -->
+      <div class="akm-card" style="margin-top: 20px;">
+        <div class="akm-card-header">
+           <h3 class="akm-card-title">Item Low Stock Thresholds (Total Stock)</h3> <!-- MODIFIED TITLE -->
+        </div>
+        <div class="table-responsive table-scroll-container" style="max-height: 250px;">
+           <table class="table">
+            <thead>
+             <tr>
+              <th>Product</th>
+              <th>Type</th> <!-- NEW -->
+              <th>Total Quantity</th>
+              <th>Low Threshold</th>
+              <th>Status</th>
+             </tr>
+            </thead>
+            <tbody id="product-thresholds-table-body">
+             <!-- Product-level thresholds will be shown here -->
+            </tbody>
+           </table>
+        </div>
+      </div>
+     </div>
+    </section>
+    
+    <!-- NEW: POS Branches Section (No changes) -->
+    <section id="branches-section" class="content-section" style="display: none;">
+         <div class="akm-card" id="branches-grid-view">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-code-branch"></i> POS Branch Management (Max 8)</h2>
+             </div>
+             <div class="akm-card-body">
+                 <div id="branches-grid" class="stats-grid">
+                     <!-- Branch slots will be rendered here -->
+                 </div>
+             </div>
+         </div>
+         
+         <!-- Individual Branch Folder View -->
+         <div class="akm-card" id="branch-detail-view" style="display: none;">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-folder-open"></i> Branch: <span id="current-branch-name"></span></h2>
+                 <div class="akm-btn-group">
+                      <button class="akm-btn akm-btn-secondary" id="back-to-branches-btn"><i class="fas fa-arrow-left"></i> Back to Branches</button>
+                 </div>
+             </div>
+             <div class="akm-card-body">
+                 <div class="row">
+                     <div class="col-md-6 col-sm-12">
+                         <div class="akm-card" style="margin-top: 0;">
+                             <div class="akm-card-header">
+                                 <h3 class="akm-card-title">Upload JSON/CSV Data (for ETL)</h3>
+                             </div>
+                             <div class="form-group">
+                                 <!-- MODIFIED: Added .csv to accept attribute -->
+                                 <input type="file" id="branch-json-upload" class="form-control" accept="application/json, .csv">
+                             </div>
+                              <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 0;">Upload a JSON/CSV file from another POS instance to analyze its data (Products, Orders, etc.). **Mapping step added for CSV/JSON.**</p>
+                         </div>
+                     </div>
+                      <div class="col-md-6 col-sm-12">
+                          <div class="akm-card" style="margin-top: 0;">
+                              <div class="akm-card-header">
+                                  <h3 class="akm-card-title">Quick Actions</h3>
+                              </div>
+                              <div class="akm-btn-group">
+                                  <button class="akm-btn akm-btn-primary" id="branch-analyze-sql-btn"><i class="fas fa-database"></i> Analyze in SQL Lab</button>
+                                  <button class="akm-btn akm-btn-info" id="branch-analyze-ai-btn"><i class="fas fa-robot"></i> Analyze with AI</button>
+                                  <button class="akm-btn akm-btn-danger" id="branch-delete-all-uploads-btn"><i class="fas fa-trash-alt"></i> Delete All Uploads</button>
+                              </div>
+                          </div>
+                      </div>
+                 </div>
+                 
+                 <div class="akm-card" style="margin-top: 20px;">
+                     <div class="akm-card-header">
+                         <h3 class="akm-card-title">Upload History</h3>
+                     </div>
+                     <div class="table-responsive table-scroll-container">
+                         <table class="table">
+                             <thead>
+                                 <tr>
+                                     <th>File Name</th>
+                                     <th>Upload Date</th>
+                                     <th class="action-buttons">Actions</th>
+                                 </tr>
+                             </thead>
+                             <tbody id="branch-uploads-table-body">
+                                 <!-- Upload history rendered here -->
+                             </tbody>
+                         </table>
+                     </div>
+                 </div>
+             </div>
+         </div>
+    </section>
+    <!-- END NEW: POS Branches Section -->
+    
+    <!-- NEW BI DASHBOARD SECTION (Copied from UAS test02.html) -->
+    <section id="bi-dashboard-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+          <div class="akm-card-header">
+            <h2 class="akm-card-title">
+              <i class="fas fa-tachometer-alt"></i>
+              Business Intelligence Dashboard
+            </h2>
+            <div class="akm-btn-group">
+              <!-- MODIFIED: PPT Prompt Button -->
+              <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="bi-metrics"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+              <!-- NEW: Suggest Custom KPIs Button (Feature 4) -->
+              <button class="akm-btn akm-btn-warning" id="suggest-kpis-btn" style="margin-right: 10px;"><i class="fas fa-medal"></i> Suggest Custom KPIs</button>
+
+              <select class="form-control" id="bi-data-source-select" style="width: auto;">
+                <option value="core">Core ERP Data (Default)</option>
+                <!-- Branch options populated by JS -->
+              </select>
+              <button class="akm-btn akm-btn-primary" id="refresh-bi-dashboard-btn">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+          </div>
+          
+          <!-- KPI Dashboard (Data Source Dependant) -->
+          <div class="stats-grid">
+            <div class="akm-stat-card">
+              <span class="stat-title">Total Revenue (<span id="kpi-revenue-source">Core</span>)</span>
+              <span class="stat-value" id="kpi-total-revenue">$0</span>
+              <span class="stat-icon"><i class="fas fa-money-bill-wave"></i></span>
+            </div>
+            
+            <div class="akm-stat-card">
+              <span class="stat-title">Total Orders (<span id="kpi-orders-source">Core</span>)</span>
+              <span class="stat-value" id="kpi-total-orders">0</span>
+              <span class="stat-icon"><i class="fas fa-shopping-cart"></i></span>
+            </div>
+            
+            <div class="akm-stat-card">
+              <span class="stat-title">Registered Customers (<span id="kpi-customers-source">Core</span>)</span>
+              <span class="stat-value" id="kpi-total-customers">0</span>
+              <span class="stat-icon"><i class="fas fa-users"></i></span>
+            </div>
+            
+            <div class="akm-stat-card">
+              <!-- MODIFIED: Added ERP Tutor Icon (Feature 6) -->
+              <span class="stat-title">Profit Margin (<span id="kpi-margin-source">Core</span>) <i class="fas fa-question-circle text-info" style="cursor: pointer; opacity: 0.7;" data-action="explain-metric" data-metric="Profit Margin" data-context="Net Profit divided by Total Revenue, expressed as a percentage."></i></span>
+              <span class="stat-value" id="kpi-profit-margin">0%</span>
+              <span class="stat-icon"><i class="fas fa-percentage"></i></span>
+            </div>
+          </div>
+          
+          <!-- NEW: Operational Insights (Core ERP Data) -->
+          <h3 class="akm-card-title" style="margin-top: 20px;"><i class="fas fa-industry"></i> Operational Insights (Core ERP Data)</h3>
+          <div class="insights-grid" id="operational-insights">
+              <div class="insight-card">
+                  <h4 class="insight-title">Pending POs (Supplies)</h4> <!-- MODIFIED TITLE -->
+                  <div class="insight-main-row">
+                      <div class="insight-value" id="op-kpi-pending-po" style="color: var(--secondary-color);">0</div>
+                      <div class="insight-icon-right" style="background-color: rgba(94, 92, 230, 0.2);"><i class="fas fa-cogs" style="color: var(--secondary-color);"></i></div>
+                  </div>
+                  <p class="insight-desc">Production Orders awaiting start</p>
+              </div>
+              <div class="insight-card">
+                  <h4 class="insight-title">Low Stock Items (Apparel/Fabric)</h4> <!-- MODIFIED TITLE -->
+                  <div class="insight-main-row">
+                      <div class="insight-value" id="op-kpi-low-stock" style="color: var(--danger-color);">0</div>
+                      <div class="insight-icon-right" style="background-color: rgba(247, 37, 133, 0.2);"><i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i></div>
+                  </div>
+                  <p class="insight-desc">Items at or below low threshold</p>
+              </div>
+              <div class="insight-card">
+                  <h4 class="insight-title">Awaiting Dispatch (Wholesale)</h4> <!-- MODIFIED TITLE -->
+                  <div class="insight-main-row">
+                      <div class="insight-value" id="op-kpi-awaiting-dispatch" style="color: var(--warning-color);">0</div>
+                      <div class="insight-icon-right" style="background-color: rgba(247, 127, 0, 0.2);"><i class="fas fa-truck-loading" style="color: var(--warning-color);"></i></div>
+                  </div>
+                  <p class="insight-desc">Orders ready for vehicle assignment</p>
+              </div>
+              <div class="insight-card">
+                  <h4 class="insight-title">Completed POs (Apparel Made, 30D)</h4> <!-- MODIFIED TITLE -->
+                  <div class="insight-main-row">
+                      <div class="insight-value" id="op-kpi-completed-po-30d" style="color: var(--success-color);">0</div>
+                      <div class="insight-icon-right" style="background-color: rgba(76, 201, 240, 0.2);"><i class="fas fa-industry" style="color: var(--success-color);"></i></div>
+                  </div>
+                  <p class="insight-desc">Finished Goods produced in last 30 days</p>
+              </div>
+          </div>
+          <!-- END NEW: Operational Insights -->
+
+          
+          <!-- Charts Row -->
+          <div class="row" style="gap: 20px; margin-top: 20px;">
+            <div class="col-md-6">
+              <div class="akm-card chart-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-chart-line"></i>
+                    Sales Trend (<span id="chart-trend-source">Core</span>)
+                  </h3>
+                  <select class="form-control" style="width: auto;" id="sales-trend-period">
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="daily">Daily</option>
+                  </select>
+                </div>
+                <div class="chart-container">
+                  <canvas id="sales-trend-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="akm-card chart-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Revenue by Item Category (<span id="chart-category-source">Core</span>) <!-- MODIFIED TITLE -->
+                  </h3>
+                </div>
+                <div class="chart-container">
+                  <canvas id="category-revenue-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NEW: What-If Simulator Card (Feature 8) -->
+          <div class="akm-card" style="margin-top: 20px;">
+              <div class="akm-card-header">
+                  <h3 class="akm-card-title"><i class="fas fa-chart-area"></i> What-If Strategy Simulator</h3>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="price-increase-input" class="form-label">Price Increase (%)</label>
+                          <input type="number" id="price-increase-input" class="form-control" value="10" min="0" max="100">
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                          <label for="cost-increase-input" class="form-label">Cost Increase (%)</label>
+                          <input type="number" id="cost-increase-input" class="form-control" value="5" min="0" max="100">
+                      </div>
+                  </div>
+              </div>
+              <div class="akm-btn-group" style="margin-top: 10px;">
+                  <button class="akm-btn akm-btn-primary" id="run-what-if-btn"><i class="fas fa-calculator"></i> Run Simulation</button>
+                  <button class="akm-btn akm-btn-secondary" id="reset-what-if-btn"><i class="fas fa-undo"></i> Reset</button>
+              </div>
+              <div id="what-if-output" class="akm-card-body" style="border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px; display: none;">
+                  <p style="margin: 0; font-style: italic;">Simulation results will appear here...</p>
+              </div>
+          </div>
+          <!-- END NEW: What-If Simulator Card -->
+
+          <!-- Recent Insights -->
+          <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+              <h3 class="akm-card-title">
+                <i class="fas fa-lightbulb"></i>
+                Recent Insights from <span id="insight-source">Core ERP</span>
+              </h3>
+            </div>
+            <div class="insights-grid" id="recent-insights">
+              <!-- Content dynamically generated by JS, structure should match new style -->
+              <div class="empty-state">
+                <i class="fas fa-lightbulb"></i>
+                <p>No data available for analysis in the selected source.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+    
+    <!-- NEW SALES ANALYSIS SECTION (Copied from UAS test02.html) -->
+    <section id="sales-analysis-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+          <div class="akm-card-header">
+            <h2 class="akm-card-title">
+              <i class="fas fa-chart-line"></i>
+              Sales Analysis
+            </h2>
+            <!-- BI Filter Controls (MODIFIED for Core/Branch, Period, Date Range) -->
+            <div class="filter-controls">
+              <select class="form-control" id="sales-source-select" style="flex-grow: 1;">
+                 <option value="core">Core ERP Data (Default)</option>
+                 <!-- Branch options populated by JS -->
+              </select>
+              <select class="form-control" id="sales-period-select" style="flex-basis: 150px; flex-grow: 1;">
+                <option value="monthly">Monthly</option>
+                <option value="weekly">Weekly</option>
+                <option value="yearly">Yearly</option>
+                <option value="daily">Daily</option>
+              </select>
+              <input type="date" class="form-control" id="sales-start-date" style="flex-grow: 1;">
+              <input type="date" class="form-control" id="sales-end-date" style="flex-grow: 1;">
+              <button class="akm-btn akm-btn-primary" id="apply-sales-filter">
+                <i class="fas fa-filter"></i> Apply
+              </button>
+              <!-- MODIFIED: PPT Prompt Button -->
+              <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="sales-analysis"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+              <!-- MODIFIED: Gen Image Prompt Button -->
+              <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-context="sales-analysis-table"><i class="fas fa-image"></i> Gen Image Prompt</button>
+            </div>
+          </div>
+          
+          <!-- Sales Insights -->
+          <div class="insights-grid">
+            <div class="insight-card">
+              <h4 class="insight-title">Total Revenue (<span id="sales-revenue-source">Core</span>)</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="sales-growth">$0</div>
+                <div class="insight-icon-right" style="background-color: rgba(0, 122, 255, 0.2);">
+                  <i class="fas fa-money-bill-wave" style="color: var(--primary-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Revenue in selected period</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Average Order Value</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="avg-order-value">$0</div>
+                <div class="insight-icon-right" style="background-color: rgba(94, 92, 230, 0.2);">
+                  <i class="fas fa-shopping-cart" style="color: var(--secondary-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Per completed transaction</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Total Profit</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="best-sales-day">$0</div>
+                <div class="insight-icon-right" style="background-color: rgba(76, 201, 240, 0.2);">
+                  <i class="fas fa-wallet" style="color: var(--success-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Net profit in selected period</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Orders by Branch</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="peak-sales-hour">N/A</div>
+                <div class="insight-icon-right" style="background-color: rgba(247, 127, 0, 0.2);">
+                  <i class="fas fa-code-branch" style="color: var(--warning-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Branch with highest transactions</p>
+            </div>
+          </div>
+          
+          <!-- Sales Charts -->
+          <div class="row" style="gap: 20px; margin-top: 20px;">
+            <div class="col-md-7">
+              <div class="akm-card chart-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Sales Over Time
+                  </h3>
+                </div>
+                <div class="chart-container">
+                  <canvas id="sales-over-time-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-5">
+              <div class="akm-card chart-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Revenue by Payment Method
+                  </h3>
+                </div>
+                <div class="chart-container">
+                  <canvas id="sales-channel-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Products Table -->
+          <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+              <h3 class="akm-card-title">
+                <i class="fas fa-crown"></i>
+                Top 10 Selling Items
+              </h3> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="table-responsive table-scroll-container">
+              <table class="table" id="top-products-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Quantity Sold</th>
+                    <th>Revenue</th>
+                    <th>Profit</th>
+                    <th>Average Price</th>
+                  </tr>
+                </thead>
+                <tbody id="top-products-body">
+                  <!-- Data will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <!-- NEW CUSTOMER ANALYSIS SECTION (Copied from UAS test02.html) -->
+    <section id="customer-analysis-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+          <div class="akm-card-header">
+            <h2 class="akm-card-title">
+              <i class="fas fa-users"></i>
+              Customer Analysis
+            </h2>
+            <div class="filter-controls">
+              <select class="form-control" id="customer-source-select" style="flex-grow: 1;">
+                 <option value="core">Core ERP Data (Default)</option>
+                 <!-- Branch options populated by JS -->
+              </select>
+              <select class="form-control" id="customer-segment-select" style="flex-grow: 1;">
+                <option value="all">All Customers</option>
+                <option value="walk-in">Walk-in</option>
+                <option value="registered">Registered</option>
+              </select>
+              <input type="date" class="form-control" id="customer-start-date" style="flex-grow: 1;">
+              <input type="date" class="form-control" id="customer-end-date" style="flex-grow: 1;">
+              <button class="akm-btn akm-btn-primary" id="apply-customers-filter">
+                <i class="fas fa-filter"></i> Apply
+              </button>
+              <!-- MODIFIED: PPT Prompt Button -->
+              <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="customer-analysis"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+              <!-- MODIFIED: Gen Image Prompt Button -->
+              <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-context="customer-analysis-table"><i class="fas fa-image"></i> Gen Image Prompt</button>
+            </div>
+          </div>
+          
+          <!-- Customer Insights -->
+          <div class="insights-grid">
+            <div class="insight-card">
+              <h4 class="insight-title">Total Registered (Wholesale) (<span id="customer-registered-source">Core</span>)</h4> <!-- MODIFIED TITLE -->
+              <div class="insight-main-row">
+                <div class="insight-value" id="new-customers">0</div>
+                <div class="insight-icon-right" style="background-color: rgba(0, 122, 255, 0.2);">
+                  <i class="fas fa-user-plus" style="color: var(--primary-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Customers with contact info</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Credit/Debt Ratio (Wholesale)</h4> <!-- MODIFIED TITLE -->
+              <div class="insight-main-row">
+                <div class="insight-value" id="retention-rate">0%</div>
+                <div class="insight-icon-right" style="background-color: rgba(94, 92, 230, 0.2);">
+                  <i class="fas fa-money-bill" style="color: var(--secondary-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Credit sales / Total sales in period</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Highest Spender</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="cltv">N/A</div>
+                <div class="insight-icon-right" style="background-color: rgba(76, 201, 240, 0.2);">
+                  <i class="fas fa-money-bill-wave" style="color: var(--success-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Total spending of top customer in period</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Branches with Customers</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="purchase-frequency">0</div>
+                <div class="insight-icon-right" style="background-color: rgba(247, 127, 0, 0.2);">
+                  <i class="fas fa-code-branch" style="color: var(--warning-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Branches with customer records</p>
+            </div>
+          </div>
+          
+          <!-- Customer Segmentation -->
+          <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+              <h3 class="akm-card-title">
+                <i class="fas fa-chart-pie"></i>
+                Customer Segmentation
+              </h3>
+            </div>
+            <div class="row" style="gap: 20px;">
+              <div class="col-md-6">
+                <div class="chart-container">
+                  <canvas id="customer-segmentation-chart"></canvas>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="table-responsive table-scroll-container" style="max-height: 300px;">
+                  <table class="table" id="customer-segments-table">
+                    <thead>
+                      <tr>
+                        <th>Customer</th>
+                        <th>Total Orders</th>
+                        <th>Total Spend</th>
+                        <th>Branch</th>
+                      </tr>
+                    </thead>
+                    <tbody id="customer-segments-body">
+                      <!-- Data will be populated here -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Customer Behavior Analysis -->
+          <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+              <h3 class="akm-card-title">
+                <i class="fas fa-user-clock"></i>
+                Customer Behavior Patterns
+              </h3>
+            </div>
+            <div class="row" style="gap: 20px;">
+              <div class="col-md-6">
+                <div class="chart-container">
+                  <canvas id="purchase-time-chart"></canvas>
+                </div>
+                <p style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: var(--text-color);">
+                  Peak Purchase Hours (Total Transactions)
+                </p>
+              </div>
+              <div class="col-md-6">
+                <div class="chart-container">
+                  <canvas id="customer-rfm-chart"></canvas>
+                </div>
+                <p style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: var(--text-color);">
+                  Transaction Count by Day of Week
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <!-- NEW PRODUCT ANALYSIS SECTION (Copied from UAS test02.html) -->
+    <section id="product-analysis-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+          <div class="akm-card-header">
+            <h2 class="akm-card-title">
+              <i class="fas fa-tshirt"></i> <!-- MODIFIED ICON -->
+              Apparel Product Analysis
+            </h2> <!-- MODIFIED TITLE -->
+            <div class="filter-controls">
+              <select class="form-control" id="product-source-select" style="flex-grow: 1;">
+                 <option value="core">Core ERP Data (Default)</option>
+                 <!-- Branch options populated by JS -->
+              </select>
+              <select class="form-control" id="product-category-select" style="flex-grow: 1;">
+                <option value="all">All Categories</option>
+              </select>
+              <input type="date" class="form-control" id="product-start-date" style="flex-grow: 1;">
+              <input type="date" class="form-control" id="product-end-date" style="flex-grow: 1;">
+              <button class="akm-btn akm-btn-primary" id="apply-products-filter">
+                <i class="fas fa-search"></i> Analyze
+              </button>
+              <!-- MODIFIED: PPT Prompt Button -->
+              <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="product-analysis"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+              <!-- MODIFIED: Gen Image Prompt Button -->
+              <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-context="product-analysis-table"><i class="fas fa-image"></i> Gen Image Prompt</button>
+            </div>
+          </div>
+          
+          <!-- Product Insights -->
+          <div class="insights-grid">
+            <div class="insight-card">
+              <h4 class="insight-title">Best Selling Item</h4> <!-- MODIFIED TITLE -->
+              <div class="insight-main-row">
+                <div class="insight-value" id="best-selling-product">N/A</div>
+                <div class="insight-icon-right" style="background-color: rgba(255, 69, 58, 0.2);">
+                  <i class="fas fa-fire" style="color: var(--danger-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Highest sales volume (units)</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Highest Revenue Item</h4> <!-- MODIFIED TITLE -->
+              <div class="insight-main-row">
+                <div class="insight-value" id="highest-revenue-product">N/A</div>
+                <div class="insight-icon-right" style="background-color: rgba(72, 149, 232, 0.2);">
+                  <i class="fas fa-chart-line" style="color: var(--accent-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Highest total revenue (USD)</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Products with Cost Data</h4>
+              <div class="insight-main-row">
+                <!-- MODIFIED: Added ERP Tutor Icon (Feature 6) -->
+                <div class="insight-value" id="slow-moving-count">0 <i class="fas fa-question-circle text-info" style="cursor: pointer; opacity: 0.7; font-size: 0.8rem;" data-action="explain-metric" data-metric="Products with Cost Data" data-context="Percentage of products that have a recorded purchasePrice (Cost) > 0. Critical for profit calculation."></i></div>
+                <div class="insight-icon-right" style="background-color: rgba(94, 92, 230, 0.2);">
+                  <i class="fas fa-percent" style="color: var(--secondary-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Percentage of products with purchase cost</p>
+            </div>
+            
+            <div class="insight-card">
+              <h4 class="insight-title">Average Profit Margin</h4>
+              <div class="insight-main-row">
+                <div class="insight-value" id="avg-profit-margin">0%</div>
+                <div class="insight-icon-right" style="background-color: rgba(76, 201, 240, 0.2);">
+                  <i class="fas fa-percentage" style="color: var(--success-color);"></i>
+                </div>
+              </div>
+              <p class="insight-desc">Cost-based Margin for all products</p>
+            </div>
+          </div>
+          
+          <!-- Product Performance Chart -->
+          <div class="akm-card" style="margin-top: 20px;">
+            <div class="akm-card-header">
+              <!-- MODIFIED: Added ERP Tutor Icon (Feature 6) -->
+              <h3 class="akm-card-title">
+                <i class="fas fa-chart-bar"></i>
+                Apparel Performance Matrix <i class="fas fa-question-circle text-info" style="cursor: pointer; opacity: 0.7;" data-action="explain-metric" data-metric="Product Performance Matrix" data-context="A scatter plot that categorizes products based on Sales Volume (X-axis) vs. Profit Margin (Y-axis)."></i>
+              </h3> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="chart-container" style="height: 400px;">
+              <canvas id="product-performance-chart"></canvas>
+            </div>
+            <div style="text-align: center; margin-top: 15px; font-size: 0.85rem; color: var(--text-color);">
+              <span style="color: var(--success-color);">● High Sales & High Profit</span>
+              <span style="margin-left: 20px; color: var(--warning-color);">● High Sales & Low Profit</span>
+              <span style="margin-left: 20px; color: var(--danger-color);">● Low Sales & Low Profit</span>
+              <span style="margin-left: 20px; color: var(--primary-color);">● Low Sales & High Profit</span>
+            </div>
+          </div>
+          
+          <!-- Product Category Analysis -->
+          <div class="row" style="gap: 20px; margin-top: 20px;">
+            <div class="col-md-6">
+              <div class="akm-card chart-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Revenue by Item Category
+                  </h3> <!-- MODIFIED TITLE -->
+                </div>
+                <div class="chart-container">
+                  <canvas id="product-category-chart"></canvas>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-6">
+              <div class="akm-card" style="margin-top: 0;">
+                <div class="akm-card-header">
+                  <h3 class="akm-card-title">
+                    <i class="fas fa-list-ol"></i>
+                    Category Performance
+                  </h3>
+                </div>
+                <div class="table-responsive table-scroll-container" style="max-height: 300px;">
+                  <table class="table" id="category-performance-table">
+                    <thead>
+                      <tr>
+                        <th>Category</th>
+                        <th>Revenue</th>
+                        <th>Profit</th>
+                        <th>Margin %</th>
+                      </tr>
+                    </thead>
+                    <tbody id="category-performance-body">
+                      <!-- Data will be populated here -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
+
+    <!-- NEW: Data Quality Assurance Section (Feature 1) -->
+    <section id="data-quality-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+            <div class="akm-card-header">
+                <h2 class="akm-card-title"><i class="fas fa-bug"></i> Data Quality Assurance Dashboard</h2>
+                <div class="akm-btn-group">
+                    <!-- MODIFIED: PPT Prompt Button -->
+                    <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="data-quality-summary"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                    <button class="akm-btn akm-btn-danger" id="run-data-quality-check-btn"><i class="fas fa-search-dollar"></i> Run Full Check</button>
+                </div>
+            </div>
+            <div id="data-quality-summary" class="stats-grid" style="margin-top: 10px;">
+                <div class="akm-stat-card" style="border-left: 5px solid var(--danger-color);">
+                     <span class="stat-title">Critical Issues</span>
+                     <span class="stat-value" id="dq-critical-count">0</span>
+                     <span class="stat-icon"><i class="fas fa-exclamation-triangle"></i></span>
+                </div>
+                <div class="akm-stat-card" style="border-left: 5px solid var(--warning-color);">
+                     <span class="stat-title">Warning Issues</span>
+                     <span class="stat-value" id="dq-warning-count">0</span>
+                     <span class="stat-icon"><i class="fas fa-exclamation"></i></span>
+                </div>
+                <div class="akm-stat-card" style="border-left: 5px solid var(--primary-color);">
+                     <span class="stat-title">Total Records Scanned</span>
+                     <span class="stat-value" id="dq-total-scanned">0</span>
+                     <span class="stat-icon"><i class="fas fa-database"></i></span>
+                </div>
+            </div>
+
+            <!-- NEW COO FEATURE: Master Data Integrity Index -->
+            <div class="akm-card" style="margin-top: 20px;">
+                <div class="akm-card-header">
+                    <h3 class="akm-card-title"><i class="fas fa-shield-alt"></i> Master Data Integrity Index (MDII)</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="akm-stat-card2">
+                        <span class="stat-title">Product MDII</span>
+                        <span class="stat-value" id="product-mdii-score">0%</span>
+                        <span class="stat-icon"><i class="fas fa-tshirt"></i></span>
+                    </div>
+                    <div class="akm-stat-card2">
+                        <span class="stat-title">BOM Integrity</span>
+                        <span class="stat-value" id="bom-integrity-score">0%</span>
+                        <span class="stat-icon"><i class="fas fa-cogs"></i></span>
+                    </div>
+                    <div class="akm-stat-card2">
+                        <span class="stat-title">Customer MDII</span>
+                        <span class="stat-value" id="customer-mdii-score">0%</span>
+                        <span class="stat-icon"><i class="fas fa-users"></i></span>
+                    </div>
+                </div>
+            </div>
+            <!-- END NEW COO FEATURE -->
+
+            <h3 class="akm-card-title" style="margin-top: 20px;"><i class="fas fa-list-ul"></i> Detailed Findings & Exceptions</h3>
+            <div class="table-responsive table-scroll-container" id="data-quality-table-container">
+                 <table class="table" id="data-quality-table">
+                     <thead>
+                         <tr>
+                             <th>Issue Type</th>
+                             <th>Table/Field</th>
+                             <th>Details</th>
+                             <th>Severity</th>
+                         </tr>
+                     </thead>
+                     <tbody id="data-quality-table-body">
+                         <tr><td colspan="4"><div class="empty-state"><p>Run the check to see data quality issues.</p></div></td></tr>
+                     </tbody>
+                 </table>
+            </div>
+        </div>
+    </section>
+    <!-- END NEW: Data Quality Assurance Section -->
+
+    <!-- NEW: ABC Inventory Analysis Section (Feature 2) -->
+    <section id="abc-analysis-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+            <div class="akm-card-header">
+                <h2 class="akm-card-title"><i class="fas fa-boxes"></i> ABC Inventory Analysis (Product Revenue)</h2> <!-- MODIFIED TITLE -->
+                <div class="akm-btn-group">
+                    <input type="number" id="abc-cutoff-a" class="form-control" value="80" min="50" max="95" style="width: 80px; text-align: center;" title="A-Class Cutoff (%)">
+                    <input type="number" id="abc-cutoff-b" class="form-control" value="95" min="70" max="100" style="width: 80px; text-align: center;" title="B-Class Cutoff (%)">
+                    <button class="akm-btn akm-btn-primary" id="run-abc-analysis-btn"><i class="fas fa-calculator"></i> Recalculate</button>
+                    <!-- MODIFIED: PPT Prompt Button -->
+                    <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="abc-analysis"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                    <!-- MODIFIED: Gen Image Prompt Button -->
+                    <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-context="abc-analysis-table"><i class="fas fa-image"></i> Gen Image Prompt</button>
+                </div>
+            </div>
+            <p style="font-size: 0.85rem; opacity: 0.8; margin-bottom: 15px;"><span id="abc-summary-text">A-Class: $0 | B-Class: $0 | C-Class: $0</span></p>
+
+            <div class="row" style="gap: 20px; margin-top: 15px;">
+                <div class="col-md-5">
+                    <div class="akm-card chart-card" style="margin-top: 0;">
+                        <div class="akm-card-header" style="border-bottom: none;">
+                            <h3 class="akm-card-title"><i class="fas fa-chart-pie"></i> ABC Revenue Distribution</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="abc-analysis-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="akm-card" style="margin-top: 0;">
+                        <div class="akm-card-header" style="border-bottom: none;">
+                            <h3 class="akm-card-title"><i class="fas fa-list-ol"></i> ABC Classification Table</h3>
+                        </div>
+                        <div class="table-responsive table-scroll-container" style="max-height: 350px;">
+                             <table class="table" id="abc-classification-table">
+                                 <thead>
+                                     <tr>
+                                         <th>Product Name</th>
+                                         <th>Revenue (30D)</th>
+                                         <th>Cumulative %</th>
+                                         <th>Class</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody id="abc-classification-table-body">
+                                     <tr><td colspan="4"><div class="empty-state" style="min-height: 50px;"><p>Click Recalculate to run the analysis.</p></div></td></tr>
+                                 </tbody>
+                             </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- END NEW: ABC Inventory Analysis Section -->
+
+    <!-- NEW: Process Mining Section (Feature 4) -->
+    <section id="process-mining-section" class="content-section" style="display: none;">
+        <div class="akm-card">
+            <div class="akm-card-header">
+                <h2 class="akm-card-title"><i class="fas fa-clock"></i> Process Mining: Order Cycle Times</h2>
+                <div class="akm-btn-group">
+                    <select id="process-mining-filter-status" class="form-control" style="width: 150px;">
+                        <option value="pending">Pending</option>
+                        <option value="awaiting-production">Awaiting Production</option>
+                        <option value="dispatching">Dispatching</option>
+                        <option value="out-for-delivery">Out for Delivery</option>
+                    </select>
+                    <select id="process-mining-filter-target" class="form-control" style="width: 150px;">
+                        <option value="completed">Completed</option>
+                        <option value="delivered">Delivered</option>
+                    </select>
+                    <button class="akm-btn akm-btn-primary" id="run-process-mining-btn"><i class="fas fa-play"></i> Analyze Cycle Time</button>
+                    <!-- MODIFIED: PPT Prompt Button -->
+                    <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="process-mining"><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                    <!-- MODIFIED: Gen Image Prompt Button -->
+                    <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-context="process-mining-chart"><i class="fas fa-image"></i> Gen Image Prompt</button>
+                </div>
+            </div>
+
+            <div class="insights-grid" id="process-mining-insights">
+                <div class="insight-card">
+                     <h4 class="insight-title">Average Cycle Time (Days)</h4>
+                     <div class="insight-main-row">
+                          <div class="insight-value" id="avg-cycle-time-days" style="color: var(--primary-color);">0 Days</div>
+                          <div class="insight-icon-right" style="background-color: rgba(0, 122, 255, 0.2);"><i class="fas fa-business-time" style="color: var(--primary-color);"></i></div>
+                     </div>
+                     <p class="insight-desc">Time from <span id="cycle-from-status">Pending</span> to <span id="cycle-to-status">Completed</span></p>
+                </div>
+                <div class="insight-card">
+                     <h4 class="insight-title">Total Orders Analyzed</h4>
+                     <div class="insight-main-row">
+                          <div class="insight-value" id="total-orders-analyzed" style="color: var(--secondary-color);">0</div>
+                          <div class="insight-icon-right" style="background-color: rgba(94, 92, 230, 0.2);"><i class="fas fa-shopping-cart" style="color: var(--secondary-color);"></i></div>
+                     </div>
+                     <p class="insight-desc">Completed orders that passed through the cycle</p>
+                </div>
+                <div class="insight-card">
+                    <h4 class="insight-title">Bottleneck Suggestion</h4>
+                    <div class="insight-main-row">
+                         
+                         <div class="insight-value" id="bottleneck-suggestion" style="font-size: 1.2rem; color: var(--danger-color);">N/A</div>
+                         <div class="insight-icon-right" style="background-color: rgba(247, 37, 133, 0.2);"><i class="fas fa-exclamation-circle" style="color: var(--danger-color);"></i></div>
+                    </div>
+                    <p class="insight-desc">Longest transition time identified</p>
+                </div>
+            </div>
+            
+            <h3 class="akm-card-title" style="margin-top: 20px;"><i class="fas fa-chart-bar"></i> Average Time Between Statuses</h3>
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="process-mining-chart"></canvas>
+            </div>
+            
+            <!-- NEW COO FEATURE: Resource Optimization Recommendation -->
+            <div id="resource-optimization-recommendation" class="resource-recommendation" style="display: none;">
+                <h5><i class="fas fa-cogs"></i> AI Resource Optimization Recommendation</h5>
+                <p id="resource-recommendation-content">AI is analyzing the bottleneck against expense data...</p>
+            </div>
+        </div>
+    </section>
+    <!-- END NEW: Process Mining Section -->
+
+    <!-- NEW: Audit Trail Section (Feature 3) -->
+    <section id="audit-trail-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-history"></i> Audit Trail & System Logs</h2>
+                 <button class="akm-btn akm-btn-secondary" id="refresh-audit-log-btn"><i class="fas fa-sync-alt"></i> Refresh Logs</button>
+             </div>
+             <!-- NEW: Filter Controls for Audit Trail -->
+             <div class="filter-controls">
+                <select id="audit-filter-type" class="form-control" style="flex-basis: 120px; flex-grow: 0;">
+                    <option value="all" selected>All Time</option>
+                    <option value="daily">Daily</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+                <div id="audit-daily-filter" class="order-filter-group" style="display: none;">
+                    <input type="date" id="audit-date-filter" class="form-control audit-filter">
+                </div>
+                <div id="audit-monthly-filter" class="order-filter-group" style="display: none;">
+                    <select id="audit-month-filter" class="form-control audit-filter"></select>
+                    <select id="audit-year-filter" class="form-control audit-filter"></select>
+                </div>
+             </div>
+             <!-- END NEW: Filter Controls -->
+             <div class="table-responsive table-scroll-container">
+                 <table class="table" id="audit-log-table">
+                     <thead>
+                         <tr>
+                             <th>Timestamp</th>
+                             <th>Event Type</th>
+                             <th>User/Context</th>
+                             <th class="action-buttons">Detail</th>
+                         </tr>
+                     </thead>
+                     <tbody id="audit-log-table-body">
+                         <!-- Audit logs rendered here -->
+                     </tbody>
+                 </table>
+             </div>
+         </div>
+    </section>
+    <!-- END NEW: Audit Trail Section -->
+
+
+    <!-- NEW: SQL Lab Section (No changes) -->
+    <section id="sql-lab-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-database"></i> SQL Lab (IndexedDB Data)</h2>
+             </div>
+             <div class="akm-card-body">
+                 <div class="row">
+                    <!-- Schema Viewer Sidebar (Col-md-3) -->
+                    <div class="col-md-3 col-sm-12" id="sql-schema-viewer">
+                        <div class="akm-card" style="margin-top: 0; min-height: 400px; background: var(--glass-bg); border: 1px solid var(--border-color);">
+                            <h5 style="margin-top: 0; margin-bottom: 10px; color: var(--text-emphasis);">Database Schema</h5>
+                            <div id="schema-tree" style="max-height: 350px; overflow-y: auto;">
+                                <div class="empty-state" style="min-height: 100px; padding: 10px;">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Loading schema...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Query Console & Results (Col-md-9) -->
+                    <div class="col-md-9 col-sm-12">
+                        <!-- NEW: Visual SQL Builder (Feature 5) -->
+                        <div id="visual-sql-builder">
+                            <h5 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;"><i class="fas fa-eye"></i> Visual Query Builder</h5>
+                            <div class="form-group">
+                                <label for="sql-select-table" class="form-label">1. Select Table</label>
+                                <select id="sql-select-table" class="form-control" required><option value="">-- Select Table --</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sql-select-columns" class="form-label">2. Select Columns (<span id="selected-col-count">0</span>)</label>
+                                <div id="sql-select-columns" class="column-list-group">
+                                    <!-- Checkboxes will be dynamically injected here -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="sql-where-clause" class="form-label">3. WHERE Clause (Optional)</label>
+                                <input type="text" id="sql-where-clause" class="form-control" placeholder="e.g., total > 10000 AND status = 'completed'">
+                            </div>
+                            <button class="akm-btn akm-btn-warning" id="generate-visual-sql-btn"><i class="fas fa-code"></i> Generate SQL</button>
+                        </div>
+                        <!-- END NEW: Visual SQL Builder -->
+
+                        <!-- AI Text-to-SQL Input (Feature 3: NLP Query Interpreter) -->
+                        <div class="form-group ai-query-box" style="margin-bottom: 10px;">
+                            <textarea id="sql-ai-query" class="form-control" placeholder="Ask AI to write a query (e.g., show top 5 selling products)..." rows="2"></textarea>
+                            <button class="akm-btn akm-btn-primary" id="generate-sql-btn" style="height: auto; min-height: 40px;"><i class="fas fa-magic"></i> AI to SQL</button>
+                        </div>
+
+                        <!-- SQL Console (Used by CodeMirror) -->
+                        <div class="form-group">
+                            <label for="sql-console" class="form-label">Raw SQL Console</label>
+                            <!-- Changed default text to a simpler query -->
+                            <textarea id="sql-console" class="form-control" placeholder="SELECT name, price, lowThreshold FROM products LIMIT 10;" rows="5" required>SELECT name, price, lowThreshold FROM products LIMIT 10;</textarea>
+                        </div>
+
+                        <!-- FEATURE 2: SQL Export Buttons -->
+                        <div class="akm-btn-group" style="margin-bottom: 15px;">
+                            <button class="akm-btn akm-btn-success" id="run-sql-query-btn"><i class="fas fa-play"></i> Run Query</button>
+                            <button class="akm-btn akm-btn-secondary" id="clear-sql-console-btn"><i class="fas fa-eraser"></i> Clear Console</button>
+                            
+                            <span style="margin-left: 15px; font-weight: bold; color: var(--primary-color);">Export/Prompt:</span>
+                            <!-- MODIFIED: Gen Image Prompt Button -->
+                            <button class="akm-btn akm-btn-info akm-btn-sm" data-action="generate-image-prompt" data-source="sql" disabled><i class="fas fa-image"></i> Gen Image Prompt</button>
+                            <button class="akm-btn akm-btn-warning akm-btn-sm" id="export-sql-png-btn" disabled><i class="fas fa-image"></i> PNG</button>
+                            <button class="akm-btn akm-btn-info akm-btn-sm" id="export-sql-csv-btn" disabled><i class="fas fa-file-csv"></i> CSV</button>
+                            <button class="akm-btn akm-btn-primary akm-btn-sm" id="export-sql-pdf-btn" disabled><i class="fas fa-file-pdf"></i> PDF</button>
+                        </div>
+                        <!-- END FEATURE 2 -->
+                        
+                        <div id="sql-result-container" class="akm-card table-responsive" style="margin-top: 0; padding: 15px; min-height: 150px;">
+                            <p style="margin:0; opacity: 0.7;">Query results will appear here...</p>
+                        </div>
+                    </div>
+                 </div>
+             </div>
+         </div>
+    </section>
+
+    <!-- NEW: AI Assistant Section (Conversational) (No changes) -->
+    <section id="ai-assistant-section" class="content-section" style="display: none;">
+        <div class="akm-card" id="ai-assistant-card">
+            <div class="akm-card-header">
+                <h2 class="akm-card-title"><i class="fas fa-comments"></i> AI Data Assistant</h2>
+                <button class="akm-btn akm-btn-secondary" id="ai-clear-chat-btn"><i class="fas fa-redo"></i> Clear Chat</button>
+            </div>
+            <div id="chat-history">
+                <!-- Initial Welcome Message -->
+                <div class="chat-message ai-message">
+                    <strong>AI Assistant:</strong> Hello! I am your AI Data Assistant for the **ERP Analysis Simulator (COO Edition)** system. I can analyze your sales, stock, **apparel production**, and **logistics** data. Ask me things like:
+                    <ul>
+                        <li>"What is my current net profit?"</li>
+                        <li>"How many apparel production orders are Work-in-Progress?"</li>
+                        <li>"Which fabric is running low on stock?"</li>
+                        <li>"Summarize my wholesale delivery status."</li>
+                    </ul>
+                </div>
+            </div>
+            <div id="ai-input-container">
+                <input type="text" id="ai-query-input" class="form-control" placeholder="Ask your data question here...">
+                <button class="akm-btn akm-btn-primary" id="send-ai-query-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </section>
+    <!-- END NEW: AI Assistant Section -->
+
+    <!-- NEW: AI Analytics Section (MODIFIED) -->
+    <section id="ai-analytics-section" class="content-section" style="display: none;">
+         <div class="akm-card">
+             <div class="akm-card-header">
+                 <h2 class="akm-card-title"><i class="fas fa-robot"></i> AI Data Analyst</h2>
+                 <div class="akm-btn-group">
+                     <!-- NEW: Strategic Health Check Button -->
+                     <button class="akm-btn akm-btn-danger" id="generate-strategic-review-btn"><i class="fas fa-heartbeat"></i> Strategic Health Check (6M)</button>
+                 </div>
+             </div>
+             <div class="akm-card-body">
+                 <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--text-color);">Ask a question about your sales data (last 6 months) and the AI will generate an analysis table.</p>
+                 
+                 <div class="form-group ai-query-box">
+                     <textarea id="ai-user-query" class="form-control" placeholder="Example: Show me the top 5 selling items last week with revenue and profit." required></textarea>
+                     <button class="akm-btn akm-btn-primary" id="generate-ai-analysis-btn" style="height: 60px;"><i class="fas fa-play"></i> Generate</button>
+                 </div>
+                 
+                 <hr>
+                 
+                 <div class="akm-card-header" style="margin-top: 20px; border-bottom: none;">
+                     <h3 class="akm-card-title"><i class="fas fa-chart-line"></i> Analysis Result</h3>
+                     <div class="akm-btn-group">
+                         <!-- MODIFIED: PPT Prompt Button for AI Analytics -->
+                         <button class="akm-btn akm-btn-warning" data-action="generate-ppt-prompt" data-context="ai-analytics-result" disabled><i class="fas fa-file-powerpoint"></i> PPT Prompt</button>
+                         <!-- MODIFIED: Gen Image Prompt Button -->
+                         <button class="akm-btn akm-btn-info" data-action="generate-image-prompt" data-source="ai" disabled><i class="fas fa-image"></i> Gen Image Prompt</button>
+                         <!-- FEATURE 2: AI Analytics Export Buttons -->
+                         <button class="akm-btn akm-btn-warning" id="ai-export-png-btn" disabled><i class="fas fa-image"></i> Download PNG</button>
+                         <button class="akm-btn akm-btn-success" id="ai-export-csv-btn" disabled><i class="fas fa-file-csv"></i> Download CSV</button>
+                         <button class="akm-btn akm-btn-primary" id="ai-export-pdf-btn" disabled><i class="fas fa-file-pdf"></i> Download PDF</button>
+                         <!-- END FEATURE 2 -->
+                     </div>
+                 </div>
+                 
+                 <div id="ai-summary-text" class="ai-summary-text" style="display: none;">
+                     <p>AI's summary of the analysis will be displayed here.</p>
+                 </div>
+                 
+                 <div id="ai-result-container" class="ai-result-container">
+                     <div class="empty-state" style="border: none; min-height: 150px;">
+                         <i class="fas fa-magic"></i>
+                         <p>Analysis table will appear here...</p>
+                     </div>
+                 </div>
+
+                <!-- NEW: Strategic Health Check Output -->
+                <div class="akm-card" style="margin-top: 30px;">
+                     <div class="akm-card-header">
+                        <h3 class="akm-card-title"><i class="fas fa-heartbeat"></i> Strategic Health Check (Long-Context)</h3>
+                     </div>
+                     <div id="strategic-review-output" class="ai-response-box">
+                         <p style="margin:0; opacity: 0.7;">Run the 'Strategic Health Check' to get a deep, long-context analysis of the last 6 months of interconnected ERP data (Sales, Stock, Production, Audit, etc.).</p>
+                     </div>
+                </div>
+                 
+
+             </div>
+         </div>
+    </section>
+
+    <!-- SQL Lab and AI Analytics will use the global tables (products, orders, etc.) for analysis. -->
+
+    <!-- Settings Section with AI config (MODIFIED) -->
+    <section id="settings-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title">Settings</h2>
+      </div>
+      <div class="akm-card-body">
+       <div class="form-group"> <label for="tax-rate-setting" class="form-label">Tax Rate (%)</label>
+        <input type="number" id="tax-rate-setting" class="form-control" min="0" step="0.1">
+       </div>
+       <div class="form-group"> <label for="receipt-title-setting" class="form-label">Receipt Title</label>
+        <input type="text" id="receipt-title-setting" class="form-control" placeholder="ERP Analysis Simulator">
+       </div>
+       <div class="form-group"> 
+            <label for="language-select" class="form-label">Language Select</label> 
+            <select id="language-select" class="form-control"> 
+                <!-- MODIFIED: English as primary default, Myanmar as secondary -->
+                <option value="en">English (Primary)</option> 
+                <option value="mm">မြန်မာ (Secondary)</option> 
+            </select>
+       </div>
+       
+       <!-- NEW: Currency Setting & Exchange Rate Adjuster (Simulated) -->
+        <hr>
+        <h4><i class="fas fa-money-bill-wave"></i> Currency & Exchange Rate</h4>
+        <div class="form-group"> 
+            <label for="currency-select" class="form-label">Main Currency</label> 
+            <select id="currency-select" class="form-control"> 
+                <option value="USD">USD ($)</option> 
+                <option value="MMK">MMK (MMK)</option> 
+                <option value="JPY">JPY (¥)</option> 
+            </select> 
+        </div>
+        <div class="form-group">
+            <label class="form-label">Simulated Exchange Rate (1 USD = ?)</label>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="rate-mmk" class="form-label" style="font-size: 0.85rem;">MMK Rate (e.g., 2500)</label>
+                    <input type="number" id="rate-mmk" class="form-control" value="2500" min="1" step="1">
+                </div>
+                <div class="col-md-6">
+                    <label for="rate-jpy" class="form-label" style="font-size: 0.85rem;">JPY Rate (e.g., 150)</label>
+                    <input type="number" id="rate-jpy" class="form-control" value="150" min="1" step="1">
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">Note: Exchange rates are used for financial reporting simulation only and do not affect item pricing directly.</p>
+        </div>
+        <!-- END NEW: Currency Setting & Exchange Rate Adjuster -->
+
+       <!-- START MODIFICATION: Custom Background Image Setting (M2) -->
+       <div class="form-group"> 
+           <label for="bg-image-upload" class="form-label">Custom Background Image</label>
+           <input type="file" id="bg-image-upload" class="form-control" accept="image/*">
+           <div class="image-upload-container">
+            <img id="bg-image-preview" src="" alt="Background Preview" style="display: none; height: 100px; width: 100px; object-fit: cover; border-radius: 8px; border: 1px dashed var(--primary-color);"> 
+            <button type="button" id="remove-bg-image-btn" class="akm-btn akm-btn-sm akm-btn-danger" style="display: none; position: static; margin-top: 10px;"><i class="fas fa-times"></i> Remove Image</button>
+           </div>
+       </div>
+       <!-- END MODIFICATION: Custom Background Image Setting -->
+       
+       <!-- UPDATED: AI Settings with Gemini 3 Models -->
+       <hr>
+       <h4>AI Configuration</h4>
+       <div class="form-group">
+        <label class="form-label">Gemini API Key</label>
+        <input type="password" id="setting-api-key" class="form-control" placeholder="AIzaSy...">
+       </div>
+       <div class="form-group">
+        <label class="form-label">AI Model</label>
+        <select id="setting-model-select" class="form-control">
+          <option value="gemini-3.0-flash">Gemini 3.0 Flash (Latest & Fastest)</option>
+          <option value="gemini-3.0-pro">Gemini 3.0 Pro (Most Powerful)</option>
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+          <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+          <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+        </select>
+       </div>
+
+      
+<div class="form-group"> <button class="akm-btn akm-btn-primary" type="button" id="save-settings-btn"><i class="fas fa-save"></i> Save All Settings</button>
+       </div>
+       <hr>
+       
+       <!-- NEW: AI Auditor (Feature 7) -->
+       <div style="margin-top: 20px;">
+           <h4><i class="fas fa-bug" style="color: var(--danger-color);"></i> AI Data Audit</h4>
+           <button class="akm-btn akm-btn-danger" type="button" id="audit-data-btn"><i class="fas fa-search-dollar"></i> Audit Data Now</button>
+           <div id="ai-audit-output" class="ai-response-box" style="margin-top: 10px; display: none;"></div>
+       </div>
+       <hr>
+
+       <!-- NEW: Data Backup/Restore Section -->
+       <div class="data-backup-management" style="margin-top: 20px;">
+        <h4><i class="fas fa-database"></i> Data Backup & Restore</h4>
+        <div class="akm-btn-group" style="margin-bottom: 15px;">
+            <button class="akm-btn akm-btn-success" id="backup-db-btn"><i class="fas fa-download"></i> Backup to JSON</button>
+            <button class="akm-btn akm-btn-warning" id="restore-db-btn" onclick="document.getElementById('restore-file-input').click()"><i class="fas fa-upload"></i> Restore from JSON</button>
+            <input type="file" id="restore-file-input" accept="application/json" style="display: none;">
+        </div>
+        
+        <div class="akm-card" style="margin-top: 0; padding: 10px; background: rgba(247, 127, 0, 0.1);">
+            <p style="font-size: 0.85rem; margin: 0; color: var(--warning-color); font-weight: bold;"><i class="fab fa-google-drive"></i> Google Drive Backup (Simulated)</p>
+            <p style="font-size: 0.8rem; margin: 5px 0 10px 0; opacity: 0.8;">External API integration is not possible in a single HTML file. Please use JSON Backup/Restore manually.</p>
+             <div class="form-group" style="margin-bottom: 5px;">
+                <input type="text" id="google-drive-key" class="form-control" placeholder="Google Drive API Key (Not Functional)">
+            </div>
+            <button class="akm-btn akm-btn-primary" disabled title="Not functional in this version"><i class="fas fa-cloud-upload-alt"></i> Backup to Drive</button>
+        </div>
+       </div>
+       <hr>
+       
+       <div class="bluetooth-management" style="margin-top: 20px;">
+        <h4>Bluetooth Printer</h4>
+        <p id="bluetooth-status">Status: Disconnected</p>
+        <div class="akm-btn-group"> <button class="akm-btn akm-btn-primary" type="button" id="connect-bluetooth-btn"><i class="fas fa-bluetooth-b"></i> Connect to Printer</button>
+        </div>
+       </div>
+       <hr>
+       <div class="data-management" style="margin-top: 20px;">
+        <h4>Data Management</h4>
+        <!-- NEW: Delete Sample Data Button -->
+        <div class="form-group">
+            <button class="akm-btn akm-btn-warning" type="button" id="delete-sample-data-btn"><i class="fas fa-trash-restore"></i> Delete Sample Data</button>
+            <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 5px;">Removes only the initial products, orders, and logs created by the simulator.</p>
+        </div>
+        <div class="row">
+         <div class="col-md-6">
+          <h5>Daily Data</h5>
+          <div class="form-group"> <label for="data-date" class="form-label">Select Date for Deletion:</label>
+           <input type="date" id="data-date" class="form-control">
+          </div> <button class="akm-btn akm-btn-warning" type="button" id="delete-data-btn"><i class="fas fa-trash"></i> Delete Data for Date</button>
+         </div>
+         <div class="col-md-6">
+          <h5>Monthly Data</h5>
+          <div class="form-group"> <label for="delete-month" class="form-label">Select Month:</label> <select id="delete-month" class="form-control"></select>
+          </div>
+          <div class="form-group"> <label for="delete-year" class="form-label">Select Year:</label> <select id="delete-year" class="form-control"></select>
+          </div> <button class="akm-btn akm-btn-warning" type="button" id="delete-monthly-data-btn"><i class="fas fa-trash-alt"></i> Delete Monthly Data</button>
+         </div>
+        </div>
+        <div style="margin-top: 20px;">
+         <button class="akm-btn akm-btn-danger" type="button" id="reset-data-btn"><i class="fas fa-exclamation-triangle"></i> Reset All Data</button>
+         <p style="font-size: 0.8rem; opacity: 0.7; margin-top: 10px;">Warning: Resetting data will delete all products, sales, and purchases and cannot be undone.</p>
+        </div>
+       </div>
+      </div>
+     </div>
+    </section>
+
+    <!-- DELETED: Reports Section -->
+    
+    <!-- About Section (MODIFIED Title) -->
+    <section id="about-section" class="content-section" style="display: none;">
+     <div class="akm-card">
+      <div class="akm-card-header">
+       <h2 class="akm-card-title">About</h2>
+      </div>
+      <div class="akm-card-body about-content">
+       <!-- MODIFIED: About Section Content -->
+       <h3>ERP Analysis Simulator (EAS)</h3>
+       <p>Version 6.1.0 (COO Edition)</p>
+       <p>This application is a powerful **ERP Analysis Simulator (EAS)** designed to model real-world apparel production, inventory (WMS), purchasing (PO - Fabric/Supplies), retail/wholesale sales (POS), and logistics operations. It features integrated tools for Bill of Materials (BOM), Production Order management, Fleet Tracking, **Financial P&L**, and advanced AI/SQL analysis. This **ERP Analysis Simulator** provides clear, actionable business insights for the fashion industry.</p> <!-- MODIFIED DESCRIPTION -->
+       
+       <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+           <h3><i class="fas fa-map-marker-alt" style="color: var(--danger-color);"></i> Location</h3>
+           <p style="font-size: 1.1rem;">Mawlamyaing</p>
+           
+           <h3 style="color: var(--primary-color);"><i class="fas fa-address-book"></i> Contact</h3>
+           <a href="https://t.me/ZNoteApp" target="_blank" class="akm-btn akm-btn-primary" style="text-decoration: none;">
+               <i class="fab fa-telegram"></i> Contact on Telegram
+           </a>
+       </div>
+       
+       <h3 style="margin-top: 20px;">Developer</h3>
+       <p>©️ Aung Kaung Myat production</p>
+       <!-- END MODIFIED: About Section Content -->
+      </div>
+     </div>
+    </section>
+   </main>
+   
+    <!-- NEW: Floating Decision Support Button (Feature 5) -->
+    <button class="akm-btn akm-btn-primary" id="ai-decision-support-btn" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; font-size: 1rem; padding: 12px 18px; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">
+        <i class="fas fa-lightbulb"></i> SCM Risk Advisor
+    </button>
+  </div>
+  <br>
+  <footer class="footer">
+   <p>©️ Aung Kaung Myat production</p>
+  </footer>
+
+  <!-- Action Island Backdrop and Menu (NEW) -->
+  <div class="action-island-backdrop" id="action-island-backdrop"></div> 
+  <div class="action-island" id="action-island"></div>
+
+  <!-- Dynamic Island Bottom Navigation Bar (Visible on Mobile) -->
+  <div id="dynamic-nav-container" class="dynamic-nav collapsed">
+      <div class="nav-content">
+          <a href="#" class="bottom-nav-link active" data-section="home"><i class="fas fa-home"></i></a> <!-- NEW HOME LINK -->
+          
+          <a href="#" class="bottom-nav-link" data-section="dashboard"><i class="fas fa-tachometer-alt"></i></a>
+          <a href="#" class="bottom-nav-link" data-section="pos"><i class="fas fa-cash-register"></i></a>
+          <a href="#" class="bottom-nav-link" data-section="finance"><i class="fas fa-dollar-sign"></i></a>
+          <a href="#" class="bottom-nav-link" data-section="stock"><i class="fas fa-warehouse"></i></a>
+          <a href="#" class="bottom-nav-link" data-section="orders"><i class="fas fa-receipt"></i></a>
+          <a href="#" class="bottom-nav-link" data-section="purchase_orders"><i class="fas fa-file-invoice"></i></a>
+      </div>
+      <div class="nav-handle"></div>
+  </div>
+
+
+  <!-- Modals (Simplified) -->
+  
+  <div class="modal" id="product-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title" id="product-modal-title">Add Product</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body">
+      <form id="product-form">
+       <input type="hidden" id="product-id">
+       <div class="form-group"> <label for="product-name" class="form-label">Product Name</label>
+        <input type="text" id="product-name" class="form-control" required>
+       </div>
+       <!-- NEW: Item Type Selector -->
+       <div class="form-group"> <label for="product-item-type" class="form-label">Item Type</label> <select id="product-item-type" class="form-control" required> <option value="">Select Type</option> <option value="FG">Finished Goods (FG)</option> <option value="Packaging">Packaging Materials</option> <option value="RM">Raw Materials (RM)</option> </select> </div>
+       <!-- END NEW: Item Type Selector -->
+       <div class="form-group"> <label for="product-barcode" class="form-label">Barcode (Optional)</label>
+        <div class="filter-controls" style="margin-bottom: 0;">
+         <input type="text" id="product-barcode" class="form-control"> <button type="button" class="akm-btn akm-btn-sm akm-btn-primary barcode-scan-btn" id="scan-product-barcode-btn"><i class="fas fa-barcode"></i></button>
+        </div>
+        <div id="product-barcode-scanner" style="display:none; margin-top:10px;"></div>
+       </div>
+       <div class="form-group"> 
+           <label for="product-category" class="form-label">Category</label> <select id="product-category" class="form-control" required> <option value="">Select Category</option> </select>
+       </div>
+       <div class="form-group"> <label for="product-price" class="form-label">Retail Price (USD)</label>
+        <input type="number" id="product-price" class="form-control" min="0" step="100" required>
+       </div>
+       <!-- WHOLESALE FEATURE: Wholesale Price Input -->
+       <div class="form-group"> <label for="product-wholesale-price" class="form-label">Wholesale Price (USD)</label>
+        <input type="number" id="product-wholesale-price" class="form-control" min="0" step="100" required>
+       </div>
+       <!-- END WHOLESALE FEATURE -->
+       <div class="form-group"> <label for="product-image-upload" class="form-label">Product Image</label>
+        <input type="file" id="product-image-upload" class="form-control" accept="image/">
+        <div class="image-upload-container">
+         <img id="product-image-preview" src="" alt="Image Preview" style="display: none;"> <button type="button" class="akm-btn akm-btn-sm akm-btn-danger" id="remove-image-btn" style="display: none;"><i class="fas fa-times"></i></button>
+        </div>
+       </div>
+      </form>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> <button type="button" class="akm-btn akm-btn-danger" id="delete-product-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button> <button type="button" class="akm-btn akm-btn-primary" id="save-product-btn">Save Product</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="category-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     
+     <div class="modal-header">
+      <h3 class="modal-title" id="category-modal-title">Add Category</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body">
+      <form id="category-form">
+       <input type="hidden" id="category-id">
+       <div class="form-group"> <label for="category-name" class="form-label">Category Name</label>
+        <input type="text" id="category-name" class="form-control" required>
+       </div>
+      </form>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> <button type="button" class="akm-btn akm-btn-danger" id="delete-category-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button> <button type="button" class="akm-btn akm-btn-primary" id="save-category-btn">Save</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="customer-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title" id="customer-modal-title">Add Customer</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body">
+      <form id="customer-form">
+       <input type="hidden" id="customer-id">
+       <div class="form-group"> <label for="customer-name" class="form-label">Customer Name</label>
+        <input type="text" id="customer-name" class="form-control" required>
+       </div>
+       <div class="form-group"> <label for="customer-phone" class="form-label">Phone Number</label>
+        <input type="tel" id="customer-phone" class="form-control">
+       </div>
+       <div class="form-group"> <label for="customer-address" class="form-label">Address</label>
+        <textarea id="customer-address" class="form-control" rows="3"></textarea>
+       </div>
+       <!-- WHOLESALE FEATURE: Credit Limit Input -->
+       <div class="form-group"> <label for="customer-credit-limit" class="form-label">Credit Limit (USD)</label>
+        <input type="number" id="customer-credit-limit" class="form-control" min="0" step="1000">
+       </div>
+       <!-- END WHOLESALE FEATURE -->
+      </form>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> <button type="button" class="akm-btn akm-btn-danger" id="delete-customer-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button> <button type="button" class="akm-btn akm-btn-primary" id="save-customer-btn">Save</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  
+  <!-- FEATURE 1: NEW CUSTOMER SELECT MODAL (from POS 20006) -->
+  <div class="modal" id="customer-select-modal">
+    <div class="modal-dialog" style="max-width: 500px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="customer-select-modal-title"><i class="fas fa-users"></i> Select Customer</h3> 
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-box" style="margin-bottom: 10px;"> 
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="pos-customer-search-modal" class="form-control" placeholder="Search customer by name or phone...">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="akm-btn akm-btn-secondary" id="select-walk-in-btn-modal" style="width: 100%;"><i class="fas fa-user"></i> Walk-in Customer</button>
+                </div>
+                <div class="table-responsive table-scroll-container" style="max-height: 300px;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Debt</th>
+                                <th class="action-buttons">Select</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-select-table-body">
+                            <!-- Customers listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-primary" id="customer-select-add-new-btn"><i class="fas fa-plus"></i> Add New</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END FEATURE 1 MODAL -->
+
+  <!-- MODIFIED: Purchase Order Modal (Module 2) -->
+  <div class="modal" id="purchase-order-modal">
+   <div class="modal-dialog" style="max-width: 600px;">
+    <div class="modal-content">
+     <div class="modal-header">
+      
+
+<h3 class="modal-title" id="purchase-order-modal-title">Create Fabric & Supplies PO</h3> <button type="button" class="modal-close">×</button> <!-- MODIFIED TITLE -->
+     </div>
+     <div class="modal-body">
+      <form id="purchase-order-form">
+       <input type="hidden" id="po-id">
+       <div class="form-group"> <label for="po-supplier" class="form-label">Supplier Name (Fabric Mill/Supplies Vendor)</label> <!-- MODIFIED LABEL -->
+        <input type="text" id="po-supplier" class="form-control" placeholder="e.g., Italian Wool Mill Corp" required>
+       </div>
+       <div class="form-group"> <label for="po-target-date" class="form-label">Expected Delivery Date</label>
+        <input type="date" id="po-target-date" class="form-control" required>
+       </div>
+       <div class="form-group"> 
+            <label class="form-label">PO Items (Fabric, Lining, Buttons, etc.)</label> <!-- MODIFIED LABEL -->
+            <div class="table-responsive table-scroll-container" style="max-height: 200px; margin-bottom: 10px;">
+                 <table class="table">
+                     <thead><tr><th>Product (RM/FG)</th><th>Qty</th><th>Unit Cost</th><th>Total</th></tr></thead>
+                     <tbody id="po-items-list">
+                         <!-- PO items rendered here -->
+                     </tbody>
+                 </table>
+            </div>
+            <div class="akm-btn-group">
+                 <button type="button" class="akm-btn akm-btn-info" id="add-po-item-btn"><i class="fas fa-plus"></i> Add Item</button>
+            </div>
+       </div>
+       <div class="summary-row grand-total" style="border-top: 1px solid var(--border-color); padding-top: 10px;"> 
+           <span class="summary-label">PO Total:</span> <span class="summary-value" id="po-total">0 USD</span>
+       </div>
+      </form>
+     </div>
+     <div class="modal-footer"> 
+         <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+         <button type="button" class="akm-btn akm-btn-danger" id="delete-po-btn" style="display: none;"><i class="fas fa-trash"></i> Cancel PO</button>
+         <button type="button" class="akm-btn akm-btn-primary" id="save-po-btn">Save PO</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- END MODIFIED: Purchase Order Modal -->
+  
+
+<!-- NEW: Add PO Item Modal (Helper modal for Module 2) -->
+  <div class="modal" id="add-po-item-modal">
+  
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add PO Item</h3> <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group"> <label for="po-item-product" class="form-label">Product (Fabric/Supplies)</label> <select id="po-item-product" class="form-control" required> <option value="">Select a Product</option> </select></div> <!-- MODIFIED LABEL -->
+                <div class="form-group"> <label for="po-item-qty" class="form-label">Quantity (e.g., Yards, Units, Cones)</label> <input type="number" id="po-item-qty" class="form-control" min="1" required></div> <!-- MODIFIED LABEL -->
+                <div class="form-group"> <label for="po-item-unit-cost" class="form-label">Unit Cost (USD)</label> <input type="number" id="po-item-unit-cost" class="form-control" min="0" step="100" required></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="confirm-add-po-item-btn">Add Item</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Add PO Item Modal -->
+
+  <!-- NEW: Receive Goods Modal (Module 2) -->
+  <div class="modal" id="receive-goods-modal">
+   <div class="modal-dialog" style="max-width: 600px;">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title" id="receive-goods-modal-title">Receive Fabric/Supplies for PO #<span id="receive-po-id-short"></span></h3> <button type="button" class="modal-close">×</button> <!-- MODIFIED TITLE -->
+     </div>
+     <div class="modal-body">
+      <p>PO Total: <strong id="receive-po-total"></strong></p>
+      <div class="table-responsive table-scroll-container" style="max-height: 200px; margin-bottom: 10px;">
+         <table class="table">
+             <thead><tr><th>Item</th><th>Qty</th><th>Unit Cost</th><th>Rack Loc</th><th>Batch/Expiry</th></tr></thead>
+             <tbody id="receive-goods-items-list">
+                 <!-- Items to receive rendered here -->
+             </tbody>
+         </table>
+      </div>
+      <div class="form-group"> <label for="receive-date" class="form-label">Receiving Date</label>
+        <input type="datetime-local" id="receive-date" class="form-control" required>
+      </div>
+     </div>
+     <div class="modal-footer"> 
+         <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+         <button type="button" class="akm-btn akm-btn-success" id="confirm-receive-goods-btn">Confirm Reception & Update Stock</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <!-- END NEW: Receive Goods Modal -->
+
+  <!-- NEW: Expense Modal (Module 1) -->
+  <div class="modal" id="expense-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="expense-modal-title">Add Operational Expense</h3> <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="expense-form">
+                    <input type="hidden" id="expense-id">
+                    <div class="form-group"> <label for="expense-date" class="form-label">Date</label> <input type="date" id="expense-date" class="form-control" required></div>
+                    <div class="form-group"> <label for="expense-category" class="form-label">Category</label> 
+                        <select id="expense-category" class="form-control" required>
+                             <option value="Salary">Salary (Tailors/Staff)</option> <!-- MODIFIED OPTION -->
+                             <option value="Rent">Rent (Workshop/Showroom)</option> <!-- MODIFIED OPTION -->
+                             <option value="Utilities">Utilities</option>
+                             <option value="Marketing">Marketing (Social Media/Ads)</option> <!-- MODIFIED OPTION -->
+                             <option value="Other">Other Operational</option>
+                        </select>
+                    </div>
+                    <div class="form-group"> <label for="expense-description" class="form-label">Description</label> <input type="text" id="expense-description" class="form-control" required></div>
+                    <div class="form-group"> <label for="expense-amount" class="form-label">Amount (USD)</label> <input type="number" id="expense-amount" class="form-control" min="1" step="100" required></div>
+                </form>
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+                <button type="button" class="akm-btn akm-btn-danger" id="delete-expense-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="save-expense-btn">Save Expense</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Expense Modal -->
+
+  <!-- NEW: Stock Transfer Modal (No changes) -->
+  <div class="modal" id="stock-transfer-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            
+            <div class="modal-header">
+                <h3 class="modal-title">Material/Item Stock Transfer (Rack to Rack)</h3> <button type="button" class="modal-close">×</button> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="modal-body">
+                <form id="transfer-form">
+                    <div class="form-group"> <label for="transfer-product-select" class="form-label">Product</label> <select id="transfer-product-select" class="form-control" required> <option value="">Select a Product</option> </select></div>
+                    <div class="form-group"> <label for="transfer-from-rack" class="form-label">Transfer FROM Rack Location</label> <select id="transfer-from-rack" class="form-control" required disabled> <option value="">Select Source Location</option> </select></div>
+                    <div class="form-group"> <label for="transfer-to-rack" class="form-label">Transfer TO Rack Location</label> <input type="text" id="transfer-to-rack" class="form-control" placeholder="Enter Destination Rack (e.g., FG-A1)" required></div>
+                    <div class="form-group"> <label for="transfer-quantity" class="form-label">Quantity to Transfer (Max: <span id="max-transfer-qty">0</span>)</label> <input type="number" id="transfer-quantity" class="form-control" min="1" required></div>
+                </form>
+            </div>
+            <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> <button type="button" class="akm-btn akm-btn-primary" id="confirm-transfer-btn">Confirm Transfer</button></div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Stock Transfer Modal -->
+  
+  <!-- NEW WMS FEATURE: Stock Count Modal -->
+  <div class="modal" id="stock-count-modal">
+    <div class="modal-dialog" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-clipboard-check"></i> WMS Stock Count (Variance Adjustment)</h3> 
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                 <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">Enter the physical count for all currently recorded stock locations. Only adjust for the difference.</p>
+                <div class="table-responsive table-scroll-container" style="max-height: 400px;">
+                    <table class="table" id="stock-count-table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Rack/Batch</th>
+                                <th>System Qty</th>
+                                <th>Physical Qty</th>
+                                <th>Variance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stock-count-table-body">
+                            <!-- Stock items for count will be injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button>
+                <button type="button" class="akm-btn akm-btn-warning" id="calculate-variance-btn"><i class="fas fa-balance-scale-right"></i> Calculate Variance</button>
+                <button type="button" class="akm-btn akm-btn-success" id="confirm-adjustment-btn" disabled><i class="fas fa-check"></i> Confirm Adjustment</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW WMS FEATURE: Stock Count Modal -->
+  
+  <!-- NEW FEATURE 2: Smart Restock Advisor Modal -->
+  <div class="modal" id="restock-advice-modal">
+    <div class="modal-dialog" style="max-width: 700px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-magic"></i> Smart Restock Advisor Report</h3> 
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 10px;">The system has calculated Reorder Points (ROP) and Economic Order Quantities (EOQ) based on the last 30 days of sales data.</p>
+                
+                <div class="table-responsive table-scroll-container" style="max-height: 400px;">
+                    <table class="table" id="restock-advice-table">
+                        <thead>
+                            <tr>
+                                <th>Product (FG/RM)</th>
+                                <th>Current Stock</th>
+                                <th>Daily Avg. Usage</th>
+                                <th>ROP</th>
+                                <th>EOQ</th>
+                                <th>Advice</th>
+                            </tr>
+                        </thead>
+                        <tbody id="restock-advice-table-body">
+                            <tr><td colspan="6"><div class="empty-state"><p>Click Generate Report to see results.</p></div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="akm-btn-group" style="margin-top: 15px;">
+                     <button class="akm-btn akm-btn-primary" id="open-po-from-restock-btn"><i class="fas fa-file-invoice"></i> Create PO from Advice</button>
+                     <button class="akm-btn akm-btn-secondary" id="restock-report-close-btn" data-action="close-modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW FEATURE 2: Smart Restock Advisor Modal -->
+
+
+  <!-- NEW: BOM Modal (MODIFIED UI) -->
+  <div class="modal" id="bom-modal">
+    <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="bom-modal-title">Create Bill of Materials (Apparel Recipe)</h3> <button type="button" class="modal-close">×</button> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="modal-body">
+                <form id="bom-form">
+                    <input type="hidden" id="bom-id">
+                    <div class="form-group"> 
+                        <label for="bom-fg-select" class="form-label">Finished Good (Suit/Shirt)</label> <!-- MODIFIED LABEL -->
+                        <select id="bom-fg-select" class="form-control" required> <option value="">Select Finished Good</option> </select>
+                    </div>
+                    <div class="form-group"> 
+                        <label class="form-label">Required Fabric & Supplies (Per 1 Unit FG)</label> <!-- MODIFIED LABEL -->
+                        <div id="bom-materials-list">
+                            <!-- Dynamically added material inputs -->
+                        </div>
+                        <button type="button" class="akm-btn akm-btn-sm akm-btn-secondary" id="add-bom-material-btn" style="margin-top: 10px;"><i class="fas fa-plus"></i> Add Material</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+                <button type="button" class="akm-btn akm-btn-danger" id="delete-bom-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="save-bom-btn">Save BOM</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: BOM Modal -->
+
+  <!-- NEW: Production Order Modal -->
+  <div class="modal" id="production-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="production-modal-title">Create Apparel Production Order</h3> <button type="button" class="modal-close">×</button> <!-- MODIFIED TITLE -->
+            </div>
+            <div class="modal-body">
+                <form id="production-form">
+                    <input type="hidden" id="production-id">
+                    <div class="form-group"> <label for="production-fg-select" class="form-label">Apparel to Produce</label> <select id="production-fg-select" class="form-control" required> <option value="">Select Finished Good</option> </select></div> <!-- MODIFIED LABEL -->
+                    <div class="form-group"> <label for="production-qty" class="form-label">Quantity to Produce (Suits/Shirts)</label> <input type="number" id="production-qty" class="form-control" min="1" required></div> <!-- MODIFIED LABEL -->
+                    <div class="form-group"> <label for="production-start-date" class="form-label">Target Start Date</label> <input type="date" id="production-start-date" class="form-control" required></div>
+                    <div class="form-group"> <label for="production-target-rack" class="form-label">Target FG Rack Location</label> <input type="text" id="production-target-rack" class="form-control" placeholder="e.g., FG-SUITS-A1" required></div> <!-- MODIFIED PLACEHOLDER -->
+                    <div id="production-material-req-summary" class="alert alert-info" style="display:none; font-size: 0.85rem;"></div>
+                </form>
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+                <button type="button" class="akm-btn akm-btn-danger" id="cancel-production-btn" style="display: none;"><i class="fas fa-times"></i> Cancel PO</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="save-production-btn">Create Order</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Production Order Modal -->
+
+  <!-- NEW: Vehicle Modal -->
+  <div class="modal" id="vehicle-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="vehicle-modal-title">Add Delivery Vehicle</h3> <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="vehicle-form">
+                    <input type="hidden" id="vehicle-id">
+                    <div class="form-group"> <label for="vehicle-plate" class="form-label">Plate Number</label> <input type="text" id="vehicle-plate" class="form-control" required></div>
+                    <div class="form-group"> <label for="vehicle-model" class="form-label">Model</label> <input type="text" id="vehicle-model" class="form-control" placeholder="e.g., Small Van (Suit Delivery)"></div> <!-- MODIFIED PLACEHOLDER -->
+                    <div class="form-group"> <label for="vehicle-driver" class="form-label">Driver Name</label> <input type="text" id="vehicle-driver" class="form-control" required></div>
+                    <div class="form-group"> <label for="vehicle-capacity" class="form-label">Capacity (kg - for boxes/suits)</label> <input type="number" id="vehicle-capacity" class="form-control" min="1" required></div> <!-- MODIFIED LABEL -->
+                </form>
+            </div>
+            
+            <div class="modal-footer"> 
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> 
+                <button type="button" class="akm-btn akm-btn-danger" id="delete-vehicle-btn" style="display: none;"><i class="fas fa-trash"></i> Delete</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="save-vehicle-btn">Save Vehicle</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Vehicle Modal -->
+
+  <!-- NEW: Audit Detail Modal (FOR FEATURE) -->
+  <div class="modal" id="audit-detail-modal">
+    <div class="modal-dialog" style="max-width: 500px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><i class="fas fa-history"></i> Audit Log Details</h3>
+                <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="audit-detail-content">
+                <!-- Content will be injected here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Close</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+  <div class="modal" id="delete-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title">Confirm Deletion</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body">
+      <p id="delete-message">Are you sure you want to delete this item?</p>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button> <button type="button" class="akm-btn akm-btn-danger" id="confirm-delete-btn">Delete</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="report-modal">
+   <div class="modal-dialog" style="max-width: 800px;">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title">Report - <span id="report-date-title"></span></h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body" id="report-content-wrapper">
+      <div id="report-content"></div>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-primary" id="export-pdf-btn"><i class="fas fa-file-pdf"></i> Export PDF</button> <button type="button" class="akm-btn akm-btn-success" id="export-csv-btn"><i class="fas fa-file-csv"></i> Export CSV</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="image-viewer-modal">
+   <div class="modal-dialog"> <button type="button" class="modal-close" style="position: absolute; top: 10px; right: 10px; z-index: 1; font-size: 2rem;">×</button>
+    <img id="full-size-image" src="" alt="Full-size Product Image">
+   </div>
+  </div>
+  <div class="modal" id="receipt-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     <div class="modal-header">
+      <h3 class="modal-title">Order Completed</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body">
+      <div id="receipt-content"> <!-- Receipt will be generated here by JS -->
+      </div>
+     </div>
+     <div class="modal-footer"> <button type="button" class="akm-btn akm-btn-primary" id="save-receipt-btn"><i class="fas fa-save"></i> Save Image</button> <button type="button" class="akm-btn akm-btn-success" id="share-receipt-btn"><i class="fas fa-share-alt"></i> Share</button> <button type="button" class="akm-btn akm-btn-info" id="print-bluetooth-btn"><i class="fas fa-print"></i> Print</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="modal" id="order-details-modal">
+   <div class="modal-dialog">
+    <div class="modal-content">
+     
+     <div class="modal-header">
+      <h3 class="modal-title">Order Details</h3> <button type="button" class="modal-close">×</button>
+     </div>
+     <div class="modal-body" id="order-details-content"></div>
+     <div class="modal-footer"> 
+         <button type="button" class="akm-btn akm-btn-info" id="send-quote-btn" style="display:none;"><i class="fas fa-envelope"></i> Send Quote</button>
+         <button type="button" class="akm-btn akm-btn-success" id="convert-to-order-btn" style="display:none;"><i class="fas fa-check"></i> Convert to Order</button>
+         <button type="button" class="akm-btn akm-btn-warning" id="print-delivery-note-btn"><i class="fas fa-clipboard-list"></i> Print Delivery Note</button>
+         <button type="button" class="akm-btn akm-btn-secondary modal-close">Close</button>
+     </div>
+    </div>
+   </div>
+  </div>
+    
+  <!-- NEW: Delivery Note Modal -->
+  <div class="modal" id="delivery-note-modal">
+    <div class="modal-dialog" style="max-width: 450px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Delivery Note Preview</h3> <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="delivery-note-content" class="delivery-note-print" style="font-family: sans-serif; padding: 15px; background: white; color: black; border: 1px solid #ccc;">
+                    <!-- Content injected by JS -->
+                </div>
+            </div>
+            <div class="modal-footer"> 
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Close</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="print-delivery-note-confirm-btn"><i class="fas fa-print"></i> Print</button>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- NEW: Logistics/Delivery Assign Modal -->
+  <div class="modal" id="logistics-assign-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Assign Delivery Vehicle</h3> <button type="button" class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Order ID: <strong id="assign-order-id"></strong></p>
+                <form id="logistics-assign-form">
+                    <input type="hidden" id="assign-order-id-hidden">
+                    <div class="form-group">
+                        <label for="assign-vehicle-select" class="form-label">Select Vehicle</label>
+                        <select id="assign-vehicle-select" class="form-control" required>
+                            <option value="">Select a Vehicle</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="assign-route-details" class="form-label">Route Details/Notes</label>
+                        <textarea id="assign-route-details" class="form-control" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="akm-btn akm-btn-secondary modal-close">Cancel</button>
+                <button type="button" class="akm-btn akm-btn-primary" id="confirm-assign-delivery-btn"><i class="fas fa-truck"></i> Assign & Dispatch</button>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- END NEW: Logistics/Delivery Assign Modal -->
+</body>
+</html>

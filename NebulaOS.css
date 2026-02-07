@@ -1,0 +1,2652 @@
+
+    /* Global Styles - Glass Morphism Theme */
+    :root {
+    /* Light Mode Colors (iOS Vibrant & Light System) */
+    --primary-color-light: #007AFF; /* iOS Blue */
+    --secondary-color-light: #5856D6; /* iOS Indigo */
+    --accent-color-light: #4895e8; /* iOS Green (Alternative Accent) */
+    --danger-color-light: #FF3B30; /* iOS Red */
+    --success-color-light: #4cc9f0; /* iOS Green */
+    --text-color-light: #1C1C1E; /* Very Dark Gray */
+    --text-emphasis-light: #000000; /* Black */
+    --bg-image-light: radial-gradient(at 90% 10%, #E8F0FF 0px, transparent 50%), 
+                          radial-gradient(at 10% 90%, #E8F0FF 0px, transparent 50%); /* Subtle light blue/purple radial blur */
+                          
+    --bg-color-light: #F2F2F7; /* iOS System Background */
+
+    --card-bg-light: rgba(255, 255, 255, 0.8); /* Semi-transparent white card */
+    --border-color-light: rgba(0, 0, 0, 0.1); /* Light shadow border */
+    --shadow-color-light: rgba(0, 0, 0, 0.1); /* Light shadow */
+    --glass-bg-light: rgba(255, 255, 255, 0.75); /* Glass effect - White/Blur */
+    --glass-border-light: rgba(0, 0, 0, 0.15); /* Slightly more opaque border */
+    --chart-bg-light: #ffffff; /* Receipt background in light mode */
+    /* Chart Palette Colors (used in JS, defined here) */
+    --chart-palette-1: #9176d1;
+    --chart-palette-2: #764ba2;
+    --chart-palette-3: #4895ef;
+    --chart-palette-4: #f72585;
+    --chart-palette-5: #4cc9f0;
+    --chart-palette-6: #f77f00;
+    --chart-palette-7: #2b2d42;
+
+    /* Dark Mode Colors (iOS Deep Dark & Vibrant System) */
+    --primary-color-dark: #0A84FF; /* iOS Blue (Dark Mode variant) */
+    --secondary-color-dark: #5E5CE6; /* iOS Indigo (Dark Mode variant) */
+    --accent-color-dark: #4895e8; /* iOS Green (Dark Mode variant) */
+    --danger-color-dark: #FF453A; /* iOS Red (Dark Mode variant) */
+    --success-color-dark: #4cc9f0; /* iOS Green (Dark Mode variant) */
+    --text-color-dark: #E5E5E7; /* Light Grayish-white */
+    --text-emphasis-dark: #FFFFFF; /* White */
+    --bg-image-dark: conic-gradient(from 180deg at 50% 50%, #14141E 0deg, #0F0F1C 120deg, #0F0F1C 240deg, #14141E 360deg); /* Very dark, subtle conic gradient */
+    --bg-color-dark: #000000; /* Pure Black / Deep Dark Background */
+
+    --card-bg-dark: rgba(23, 23, 35, 0.8); /* iOS System Gray 6 (Dark Mode) - Semi-transparent */
+    --border-color-dark: rgba(255, 255, 255, 0.15); /* Semi-transparent white border */
+    --shadow-color-dark: rgba(0, 0, 0, 0.5); /* Darker shadow */
+    --glass-bg-dark: rgba(23, 23, 35,0.7); /* Glass effect - Dark Gray/Blur */
+    --glass-border-dark: rgba(255, 255, 255, 0.1); /* Glass border */
+    --chart-bg-dark: #1d1e33; /* Receipt background in dark mode (from JS hardcode) */
+    
+    /* General Variables - Kept original (warning color is an orange which is common across schemes) */
+    --warning-color: #f77f00; /* Orange for warnings */
+    --border-radius: 12px;
+    --transition-duration: 0.4s ease-in-out;
+    --sidebar-width: 220px;
+    --header-height: 56px;
+
+    /* Dynamic Variables - Will be set to light or dark on body class */
+    --primary-color: var(--primary-color-dark);
+    --secondary-color: var(--secondary-color-dark);
+    --accent-color: var(--accent-color-dark);
+    --success-color: var(--success-color-dark);
+    --danger-color: var(--danger-color-dark);
+    --text-color: var(--text-color-dark);
+    --text-emphasis: var(--text-emphasis-dark);
+    --bg-image: var(--bg-image-dark);
+    --bg-color: var(--bg-color-dark);
+    --card-bg: var(--card-bg-dark);
+    --border-color: var(--border-color-dark);
+    --shadow-color: var(--shadow-color-dark);
+    --glass-bg: var(--glass-bg-dark);
+    --glass-border: var(--glass-border-dark);
+    --chart-bg: var(--chart-bg-dark);
+
+      /* General Variables */
+      --warning-color: #f77f00; /* Orange for warnings */
+      --border-radius: 12px;
+      --transition-duration: 0.4s ease-in-out;
+      --sidebar-width: 220px;
+      --header-height: 56px;
+    }
+    
+
+    @keyframes animated-gradient {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    @keyframes modal-pop-in {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+    
+    .modal.show .modal-dialog { animation: modal-pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+    @keyframes section-slide-in {
+        from { opacity: 0; transform: translateY(15px) scale(0.98); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes section-slide-out {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to { opacity: 0; transform: translateY(-15px) scale(0.98); }
+    }
+
+    .content-section.is-exiting { animation: section-slide-out 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards; }
+    .content-section.is-entering { animation: section-slide-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+    /* Card/Stat/Product Card simple fade in */
+    .akm-card, .akm-stat-card, .akm-stat-card2, .akm-product-card {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    /* Remove staggered animation logic from CSS since we rely on section transitions */
+    .stats-grid .akm-stat-card, .stats-grid .akm-stat-card2, .products-grid .akm-product-card {
+        animation-delay: 0s !important; /* Override old staggered logic */
+    }
+    
+    /* NEW: Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 350px;
+    }
+    
+    .toast {
+        background-color: var(--card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        box-shadow: 0 4px 12px var(--shadow-color);
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        transform: translateX(400px);
+        transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        max-width: 350px;
+    }
+    
+    .toast.show {
+        transform: translateX(0);
+    }
+    
+    .toast-icon {
+        font-size: 1.2rem;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    
+    .toast-success .toast-icon { color: var(--success-color); }
+    .toast-error .toast-icon { color: var(--danger-color); }
+    .toast-warning .toast-icon { color: var(--warning-color); }
+    .toast-info .toast-icon { color: var(--primary-color); }
+    
+    .toast-content {
+        flex: 1;
+    }
+    
+    .toast-title {
+        font-weight: 600;
+        color: var(--text-emphasis);
+        margin-bottom: 4px;
+        font-size: 0.95rem;
+    }
+    
+    .toast-message {
+        color: var(--text-color);
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .toast-close {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        opacity: 0.7;
+        cursor: pointer;
+        font-size: 1rem;
+        padding: 0;
+        line-height: 1;
+        transition: opacity 0.2s;
+    }
+    
+    .toast-close:hover {
+        opacity: 1;
+    }
+    
+    .toast-progress {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        background-color: var(--primary-color);
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        width: 100%;
+        transform-origin: left;
+        animation: toastProgress 5s linear forwards;
+    }
+    
+    @keyframes toastProgress {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(0); }
+    }
+    
+    /* NEW: Custom Confirm Modal */
+    .confirm-modal .modal-dialog {
+        max-width: 400px;
+    }
+    
+    .confirm-icon {
+        text-align: center;
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--warning-color);
+    }
+    
+    .confirm-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .confirm-buttons .akm-btn {
+        flex: 1;
+    }
+    
+    /* NEW: Loading Overlay (MODIFIED) */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        z-index: 9998;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .loading-overlay.show {
+        display: flex;
+        opacity: 1;
+    }
+
+    .loading-content { /* NEW: Wrapper for spinner and text */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: var(--card-bg);
+        padding: 20px 30px;
+        border-radius: var(--border-radius);
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 3px solid var(--border-color);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Improved loading for AI */
+    .loading-ai {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--primary-color);
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    
+    .ai-loading-text {
+        display: inline-block;
+        vertical-align: middle;
+        color: var(--text-color);
+    }
+    
+    /* Enhanced table scrolling */
+    .table-scroll-container {
+        max-height: 400px;
+        overflow-y: auto;
+        position: relative;
+    }
+    
+    .table-scroll-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .table-scroll-container::-webkit-scrollbar-track {
+        background: var(--glass-bg);
+        border-radius: 3px;
+    }
+    
+    .table-scroll-container::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .table-scroll-container table {
+        margin-bottom: 0;
+    }
+    
+    /* Daily Report Modal specific table scroll */
+    #report-content .table-scroll-container {
+        max-height: 300px;
+    }
+    
+    /* MODIFIED: Table responsive with auto-scroll */
+    .table-responsive.auto-scroll {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    /* Small screen adjustments */
+    @media (max-height: 700px) {
+        .table-scroll-container {
+            max-height: 300px;
+        }
+        
+        #report-content .table-scroll-container {
+            max-height: 200px;
+        }
+    }
+
+    /* Default to Dark Mode */
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      /* Add padding-bottom to prevent content from being hidden by the dynamic footer */
+      padding: 0 0 80px 0;
+      background: var(--bg-color);
+      background-image: var(--bg-image);
+      color: var(--text-color);
+      transition: background var(--transition-duration), color var(--transition-duration);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    /* FIX 1: Remove cursor blocking when sidebar is open */
+    body.sidebar-open {
+        overflow: hidden; /* Prevent background scrolling when sidebar is open */
+        position: fixed; /* Fix content when open on mobile */
+        width: 100%;
+    }
+    /* FIX 1: The issue is often the ::before not disappearing or a child element covering the main content.
+       The existing CSS for .sidebar-open is:
+    
+    body.sidebar-open::before { 
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        z-index: 105;
+    }
+    
+       The fix will be in JS, but keeping the CSS as is (since it correctly creates the overlay).
+    */
+
+
+    /* Dark Mode */
+    body.dark-mode {
+      --primary-color: var(--primary-color-dark);
+      --secondary-color: var(--secondary-color-dark);
+      --accent-color: var(--accent-color-dark);
+      --success-color: var(--success-color-dark);
+      --danger-color: var(--danger-color-dark);
+      --text-color: var(--text-color-dark);
+      --text-emphasis: var(--text-emphasis-dark);
+      --bg-image: var(--bg-image-dark);
+      --bg-color: var(--bg-color-dark);
+      --card-bg: var(--card-bg-dark);
+      --border-color: var(--border-color-dark);
+      --shadow-color: var(--shadow-color-dark);
+      --glass-bg: var(--glass-bg-dark);
+      --glass-border: var(--glass-border-dark);
+      --chart-bg: var(--chart-bg-dark);
+    }
+
+    /* Light Mode */
+    body.light-mode {
+      --primary-color: var(--primary-color-light);
+      --secondary-color: var(--secondary-color-light);
+      --accent-color: var(--accent-color-light);
+      --danger-color: var(--danger-color-light);
+      --success-color: var(--success-color-light);
+      --text-color: var(--text-color-light);
+      --text-emphasis: var(--text-emphasis-light);
+      --bg-image: var(--bg-image-light);
+      --bg-color: var(--bg-color-light);
+      --card-bg: var(--card-bg-light);
+      --border-color: var(--border-color-light);
+      --shadow-color: var(--shadow-color-light);
+      --glass-bg: var(--glass-bg-light);
+      --glass-border: var(--glass-border-light);
+      --chart-bg: var(--chart-bg-light);
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      min-height: calc(100vh - var(--header-height));
+      padding-top: var(--header-height);
+    }
+
+    /* Header */
+    .header {
+      height: var(--header-height);
+      background-color: var(--card-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      display: flex;
+      align-items: center;
+      padding: 0 15px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transition: all var(--transition-duration);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo i {
+      font-size: 1.5rem;
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: var(--text-emphasis);
+      font-size: 1.3rem;
+      cursor: pointer;
+      margin-right: 15px;
+      display: block; 
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--text-emphasis);
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--card-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 2px 0 4px var(--shadow-color);
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      bottom: 0;
+      transition: transform var(--transition-duration), background-color var(--transition-duration);
+      overflow-y: auto;
+      z-index: 90;
+      border-right: 1px solid var(--glass-border);
+      transform: translateX(0);
+    }
+
+    .sidebar-collapsed {
+      transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 15px 0;
+      margin: 0;
+    }
+
+    /* MODIFIED: New styles for menu title toggle system */
+    .menu-title {
+      display: none; /* Hide old menu title for new toggle system */
+    }
+
+    .menu-title-toggle {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        color: var(--text-color);
+        opacity: 0.9;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: color var(--transition-duration);
+    }
+
+    .menu-title-toggle:hover {
+        color: var(--primary-color);
+    }
+
+    .menu-title-toggle i {
+        transition: transform 0.3s ease;
+    }
+
+    .menu-title-toggle.collapsed i {
+        transform: rotate(-90deg);
+    }
+    
+    .menu-group-body {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+        /* Use max-height for smooth transition (toggled via JS) */
+        transition: max-height 0.4s ease-in-out;
+    }
+    /* END MODIFIED */
+
+
+    .menu-item {
+      margin-bottom: 4px;
+      position: relative; /* For sub-menu */
+    }
+
+    .menu-link {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      color: var(--text-color);
+      text-decoration: none;
+      transition: background-color var(--transition-duration), color var(--transition-duration);
+      border-radius: 6px;
+      margin: 0 8px;
+    }
+
+    body.light-mode .menu-link:hover,
+    body.light-mode .menu-link.active {
+      background-color: var(--primary-color);; /* Light indigo */
+      color: #fff;
+    }
+
+    body.dark-mode .menu-link:hover,
+    body.dark-mode .menu-link.active {
+      background-color: var(--primary-color); /* Light indigo */
+      color: #fff;
+    }
+
+    .menu-link i {
+      margin-right: 10px;
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+    
+    /* NEW BI Sub-Menu Styles (Copied from UAS test02.html) */
+    .sub-menu {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-in-out;
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      margin: 4px 8px;
+    }
+    
+    /* MODIFIED: Use active class to control sub-menu visibility */
+    .menu-item.active .sub-menu {
+        max-height: 500px; /* Arbitrarily large value for smooth transition */
+    }
+
+    .sub-menu-item .menu-link {
+      padding: 8px 15px 8px 30px; /* Indent sub-links */
+      font-size: 0.9rem;
+      border-radius: 0;
+      margin: 0;
+    }
+    
+    .sub-menu-item .menu-link:hover,
+    .sub-menu-item .menu-link.active {
+      background-color: var(--secondary-color);
+      color: #fff;
+    }
+
+
+    /* Main Content */
+    .main-content {
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        padding: 15px;
+        transition: margin-left var(--transition-duration);
+        overflow-x: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - var(--header-height));
+    }
+
+
+    .main-content-collapsed {
+      margin-left: 0;
+    }
+
+    /* Cards */
+    .akm-card {
+       background-color: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(8px);
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      padding: 15px;
+      
+      transition: background var(--transition-duration), box-shadow var(--transition-duration);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .akm-card-body {
+      padding-top: 15px;
+    }
+
+    body.dark-mode .akm-card {
+      background-color: var(--glass-bg-dark);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border-dark);
+    }
+
+    .akm-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .akm-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-emphasis);
+      margin: 0;
+    }
+    
+    /* BI Card Title - Modified for smaller size */
+    #sales-analysis-section .akm-card-title,
+    #customer-analysis-section .akm-card-title,
+    #product-analysis-section .akm-card-title,
+    #bi-insights-section .akm-card-title,
+    #bi-dashboard-section .akm-card-title,
+    #analyst-hub-section .akm-card-title {
+        font-size: 1.4rem; 
+        gap: 10px;
+    }
+
+
+    /* Buttons */
+    .akm-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      border-radius: var(--border-radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-duration);
+      border: none;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      color: #ffffff;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    border: 1px solid var(--border-color);
+    }
+
+    .akm-btn i {
+      margin-right: 6px;
+    }
+
+    .akm-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .akm-btn-primary { background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)); }
+    body.light-mode .akm-btn-primary:hover,
+    body.dark-mode .akm-btn-primary:hover { background-color: var(--accent-color); }
+    /* SQL SCHEMA Toggle Icon Styling */
+    .akm-btn-outline-primary i.fa-angle-right {
+        transition: transform 0.3s;
+    }
+    .akm-btn-outline-primary.open i.fa-angle-right {
+        transform: rotate(90deg);
+    }
+
+    .akm-btn-secondary { background-color: var(--secondary-color); }
+    body.light-mode .akm-btn-secondary:hover,
+    body.dark-mode .akm-btn-secondary:hover { background-color: var(--accent-color); }
+
+    .akm-btn-success { background-color: var(--success-color); }
+    /* Replaced hardcoded hover with rgba derived from success color for consistency if possible, 
+       but keeping the original approach if necessary for specific shades. */
+    body.light-mode .akm-btn-success:hover,
+    body.dark-mode .akm-btn-success:hover { 
+        background-color: #3ab8db; /* Hard-coded cyan shade (kept original JS intent for now) */ 
+    } 
+
+    .akm-btn-danger { background-color: var(--danger-color); }
+    /* Replaced hardcoded hover with rgba derived from danger color for consistency if possible,
+       but keeping the original approach if necessary for specific shades. */
+    body.light-mode .akm-btn-danger:hover { background-color: #e5177e; } /* Hard-coded darker pink/magenta */
+    body.dark-mode .akm-btn-danger:hover { background-color: #e5177e; } /* Hard-coded darker pink/magenta */
+
+    .akm-btn-warning { background-color: var(--warning-color); color: white; }
+    body.light-mode .akm-btn-warning:hover,
+    body.dark-mode .akm-btn-warning:hover { background-color: #e67500; } /* Hard-coded darker orange */
+    /* Active state for filter button */
+    .akm-btn-warning.active {
+        background: #e67500; /* Hard-coded darker orange */
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Replaced hardcoded info color with a color variable if not existing */
+    .akm-btn-info { background-color: #17a2b8; color: white; } /* Kept original hardcoded info color */
+
+
+    .akm-btn-outline-primary {
+      background-color: transparent;
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color) !important;
+    }
+    .akm-btn-outline-primary:hover { background-color: var(--primary-color); color: white !important; }
+
+    .akm-btn-sm {
+      padding: 5px 10px;
+      font-size: 0.75rem;
+    }
+
+    .akm-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* --- NEW ACTION ISLAND STYLES --- */
+    .action-island-backdrop {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: transparent;
+        z-index: 1098;
+        display: none;
+    }
+
+    .action-island {
+        position: fixed;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        border-radius: 25px;
+        box-shadow: 0 4px 20px var(--shadow-color);
+        display: flex;
+        gap: 5px;
+        padding: 5px;
+        z-index: 1099;
+        transform-origin: bottom center;
+        transform: translateY(10px) scale(0.8);
+        opacity: 0;
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out;
+        pointer-events: none;
+        max-width: 90vw; /* Prevent overflow on very small screens */
+    }
+
+    .action-island.show {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Override akm-btn within action island to be small and circular */
+    .action-island .akm-btn {
+        padding: 0;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        font-size: 0.9rem;
+        box-shadow: none;
+        background: transparent; /* Start transparent, use primary color for hover */
+        color: var(--text-emphasis);
+        border: none;
+    }
+    
+    .action-island .akm-btn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .action-island .akm-btn-danger:hover {
+        background-color: var(--danger-color);
+        color: white;
+    }
+    
+    .action-island .akm-btn i {
+        margin: 0;
+    }
+    /* --- END ACTION ISLAND STYLES --- */
+    
+    /* ADDED: Clickable cell style */
+    .table .clickable-cell {
+        cursor: pointer;
+        font-weight: 600; /* Emphasize the clickable cell */
+    }
+    
+    /* FEATURE 1: NEW CUSTOMER DISPLAY STYLES (from POS 20006) */
+    #customer-display {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+    }
+    #customer-display .akm-btn {
+        padding: 6px 10px;
+    }
+    #selected-customer-name {
+        font-weight: 600;
+        color: var(--text-emphasis);
+        flex-grow: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* END FEATURE 1 STYLES */
+
+
+    /* Badges & Status Tags */
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 16px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+    }
+    .order-status-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 16px;
+        text-align: center;
+        border: 1px solid transparent;
+    }
+    /* All order status badges already use var(--color) in rgba, which is correct */
+    .order-status-badge.quote { background-color: rgba(160, 160, 160, 0.2); color: #888; border-color: rgba(160, 160, 160, 0.3); }
+    .order-status-badge.pending { background-color: rgba(247, 127, 0, 0.2); color: var(--warning-color); border-color: rgba(247, 127, 0, 0.3); }
+    .order-status-badge.processing { background-color: rgba(72, 149, 239, 0.2); color: var(--accent-color); border-color: rgba(72, 149, 239, 0.3); }
+    .order-status-badge.shipped { background-color: rgba(118, 75, 162, 0.2); color: var(--secondary-color); border-color: rgba(118, 75, 162, 0.3); }
+    .order-status-badge.completed { background-color: rgba(76, 201, 240, 0.2); color: var(--success-color); border-color: rgba(76, 201, 240, 0.3); }
+    .order-status-badge.cancelled { background-color: rgba(247, 37, 133, 0.2); color: var(--danger-color); border-color: rgba(247, 37, 133, 0.3); }
+    /* NEW: Dispatching Status */
+    .order-status-badge.dispatching { background-color: rgba(102, 126, 234, 0.2); color: var(--primary-color); border-color: rgba(102, 126, 234, 0.3); }
+    /* NEW DISTRIBUTION STATUSES */
+    .order-status-badge.out-for-delivery { background-color: rgba(255, 165, 0, 0.2); color: #ff8c00; border-color: rgba(255, 165, 0, 0.3); }
+    .order-status-badge.delivered { background-color: rgba(60, 179, 113, 0.2); color: #3cb371; border-color: rgba(60, 179, 113, 0.3); }
+    .order-status-badge.awaiting-production { background-color: rgba(255, 215, 0, 0.2); color: #ffd700; border-color: rgba(255, 215, 0, 0.3); }
+    /* END NEW DISTRIBUTION STATUSES */
+
+    /* NEW PRODUCTION STATUSES (Using the same classes) */
+    .order-status-badge.wip { background-color: rgba(94, 92, 230, 0.2); color: var(--secondary-color); border-color: rgba(94, 92, 230, 0.3); }
+    
+    /* NEW PURCHASE ORDER STATUSES (Module 2) */
+    .po-status-badge {
+         font-size: 0.75rem;
+         font-weight: 600;
+         padding: 3px 8px;
+         border-radius: 16px;
+         text-align: center;
+         border: 1px solid transparent;
+    }
+    .po-status-badge.pending { background-color: rgba(0, 122, 255, 0.2); color: var(--primary-color); border-color: rgba(0, 122, 255, 0.3); }
+    .po-status-badge.received { background-color: rgba(76, 201, 240, 0.2); color: var(--success-color); border-color: rgba(76, 201, 240, 0.3); }
+    .po-status-badge.paid { background-color: rgba(118, 75, 162, 0.2); color: var(--secondary-color); border-color: rgba(118, 75, 162, 0.3); }
+    .po-status-badge.cancelled { background-color: rgba(247, 37, 133, 0.2); color: var(--danger-color); border-color: rgba(247, 37, 133, 0.3); }
+
+
+    body.light-mode .badge-primary { background-color: rgba(102, 126, 234, 0.2); color: var(--primary-color); }
+    body.dark-mode .badge-primary { background-color: rgba(102, 126, 234, 0.2); color: var(--primary-color); }
+
+    /* Stock Table Status */
+    .stock-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    /* Stock statuses already use var(--color) in rgba, which is correct */
+    .stock-status.low {
+      background-color: rgba(247, 37, 133, 0.2); /* Light pink/magenta */
+      color: var(--danger-color);
+      border: 1px solid rgba(247, 37, 133, 0.3);
+    }
+
+    .stock-status.normal {
+      background-color: rgba(76, 201, 240, 0.2); /* Light cyan */
+      color: var(--success-color);
+      border: 1px solid rgba(76, 201, 240, 0.3);
+    }
+    
+    /* Debt Status */
+    .debt-status {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 16px;
+        text-align: center;
+    }
+    /* Debt statuses already use var(--color) in rgba, which is correct */
+    .debt-status.paid {
+        background-color: rgba(76, 201, 240, 0.2); /* Light cyan */
+        color: var(--success-color);
+        border: 1px solid rgba(76, 201, 240, 0.3);
+    }
+    .debt-status.unpaid {
+        background-color: rgba(247, 127, 0, 0.2); /* Light orange */
+        color: var(--warning-color);
+        border: 1px solid rgba(247, 127, 0, 0.3);
+    }
+    /* NEW: P&L Statement */
+    .pnl-statement .summary-row {
+        font-size: 1.1rem;
+        padding: 5px 0;
+    }
+    .pnl-statement .summary-row.heading {
+        font-weight: 700;
+        color: var(--primary-color);
+        border-top: 1px dashed var(--border-color);
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    .pnl-statement .summary-row.sub-heading {
+        font-weight: 600;
+        color: var(--text-emphasis);
+        padding-top: 5px;
+    }
+    .pnl-statement .summary-row.final {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--success-color);
+        border-top: 3px double var(--primary-color);
+        padding-top: 10px;
+    }
+    /* END NEW: P&L Statement */
+
+
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .akm-stat-card, .akm-stat-card2, .insight-card { /* Combined with BI insight-card */
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      border-radius: var(--border-radius);
+       background-color: var(--glass-bg);
+        backdrop-filter: blur(20px);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    
+    .akm-stat-card:hover, .insight-card:hover {
+        transform: translateY(-2px); /* Slightly less movement */
+        box-shadow: 0 4px 8px var(--shadow-color);
+    }
+
+    /* ADDED: Stat Icon Styling */
+    .stat-icon, .insight-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        opacity: 0.5;
+    }
+
+
+    body.dark-mode .akm-stat-card,
+    body.dark-mode .akm-stat-card2 {
+      background-color: var(--glass-bg-dark);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border-dark);
+    }
+
+    .stat-title, .kpi-card .label { /* Unified */
+      font-size: 0.85rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-bottom: 8px;
+    }
+
+    .stat-value, .kpi-card .value { /* Unified */
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-emphasis);
+      margin-bottom: 8px;
+      word-break: break-all;
+    }
+    
+    /* MODIFIED: Styles for BI Insight Card (Copied from UAS test02.html) */
+    .insights-grid { /* Merged styles for consistency */
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .insight-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .insight-title { 
+        font-size: 0.85rem; 
+        color: var(--text-color); 
+        opacity: 0.8;
+        margin: 0 0 5px 0; /* Align with stat-title for top margin */
+    }
+
+    .insight-main-row { /* New wrapper for icon and value */
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    .insight-value { 
+        font-size: 1.8rem; /* FIXED: Reduced from 2.2rem for better fit */
+        font-weight: 700;
+        color: var(--primary-color); /* Highlight color */
+        line-height: 1.1;
+        margin: 0;
+        word-break: break-all;
+        flex-grow: 1;
+    }
+
+    /* The main colored icon in the image, positioned on the right */
+    .insight-icon-right { 
+        font-size: 2.0rem; /* Large icon size */
+        color: var(--primary-color);
+        opacity: 1;
+        position: relative;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(145, 118, 209, 0.2); /* Use a shade of primary color */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .insight-icon-right i {
+        font-size: 1.5rem;
+    }
+    
+    .insight-desc { 
+        font-size: 0.8rem;
+        color: var(--text-color); 
+        opacity: 0.8; 
+        margin: 5px 0 0 0;
+    }
+
+
+    .stat-change {
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .stat-change i { margin-right: 4px; }
+    .stat-change.up { color: var(--success-color); }
+    .stat-change.down { color: var(--danger-color); }
+    
+    /* NEW: ABC Analysis Classification Status */
+    .abc-class {
+        font-size: 0.85rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid transparent;
+    }
+    .abc-class.A { background-color: rgba(0, 122, 255, 0.2); color: var(--primary-color); border-color: var(--primary-color); }
+    .abc-class.B { background-color: rgba(247, 127, 0, 0.2); color: var(--warning-color); border-color: var(--warning-color); }
+    .abc-class.C { background-color: rgba(247, 37, 133, 0.2); color: var(--danger-color); border-color: var(--danger-color); }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-wrapper-scroll-y {
+        display: block;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem; /* Added from UAS test02.html */
+    }
+
+    .table th,
+    .table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+      color: var(--text-color);
+      vertical-align: middle; /* Align content vertically */
+    }
+
+    .table td { color: var(--text-emphasis); }
+
+    .table th {
+      font-weight: 600;
+      color: var(--text-emphasis);
+      background-color: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    /* NEW: Sticky Header for SQL/BI Results Table */
+    .ai-result-container table th,
+    #sql-result-container table th,
+    #bi-dashboard-section table th,
+    #sales-analysis-section table th,
+    #customer-analysis-section table th,
+    #product-analysis-section table th,
+    #data-quality-table table th,
+    #audit-log-table table th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    body.light-mode .table tbody tr:hover { background-color: rgba(102, 126, 234, 0.05); } /* Very light indigo */
+    body.dark-mode .table tbody tr:hover { background-color: rgba(102, 126, 234, 0.1); } /* Light indigo */
+
+    .table td:last-child, .table th:last-child {
+      text-align: right;
+    }
+    
+    /* MODIFIED: Left align action buttons for WMS Stock view and Audit Trail */
+    .table td.action-buttons, .table th.action-buttons {
+      text-align: left !important;
+    }
+
+    /* MODIFIED: Highlight row with variance in stock count */
+    .table .alert-warning {
+        border-left: 5px solid var(--warning-color);
+    }
+    /* END MODIFIED */
+
+
+    /* Order Details Section */
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      margin-right: -15px;
+      margin-left: -15px;
+    }
+
+    .col-md-8, .col-md-6, .col-md-4, .col-sm-12, .col-md-5, .col-md-7 {
+      position: relative;
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+      box-sizing: border-box;
+    }
+
+    /* UI FIX: Added .col-md-12 to base definition for mobile full width */
+    .col-md-12, .col-md-8, .col-md-6, .col-md-4, .col-sm-12, .col-md-5, .col-md-7 {
+      position: relative;
+      width: 100%;
+      padding-right: 15px;
+      padding-left: 15px;
+      box-sizing: border-box;
+    }
+
+    @media (min-width: 768px) {
+      .col-md-3 { flex: 0 0 25%; max-width: 25%; } /* Added for BI/SQL layouts */
+      .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; }
+      .col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; }
+      .col-md-6 { flex: 0 0 50%; max-width: 50%; }
+      .col-md-7 { flex: 0 0 58.333333%; max-width: 58.333333%; }
+      .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; }
+      .col-md-12 { flex: 0 0 100%; max-width: 100%; }
+    }
+
+    .order-details {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 400px;
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .order-header h3 { margin: 0; color: var(--text-emphasis); }
+
+    /* NEW: Customer Type Selector (for Price Level) */
+    .customer-type-selector {
+        display: flex;
+        background-color: var(--glass-bg);
+        border-radius: var(--border-radius);
+        padding: 4px;
+        border: 1px solid var(--border-color);
+    }
+    .customer-type-selector label {
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        color: var(--text-emphasis);
+    }
+    .customer-type-selector input[type="radio"] {
+        display: none;
+    }
+    .customer-type-selector input[type="radio"]:checked + label {
+        background: var(--primary-color);
+        color: white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    /* END NEW: Customer Type Selector */
+
+
+    .order-items {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 15px;
+      min-height: 150px;
+    }
+
+    .order-summary {
+      border-top: 2px solid var(--border-color);
+      padding-top: 12px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: var(--text-color);
+    }
+    .summary-row input {
+        max-width: 80px;
+        text-align: right;
+        padding: 2px 4px;
+    }
+
+    .summary-label { font-weight: 600; }
+    .summary-value { font-weight: 700; color: var(--text-emphasis); }
+
+    .grand-total {
+      font-size: 1.1rem;
+      color: var(--primary-color);
+    }
+
+    .grand-total .summary-label, .grand-total .summary-value {
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    /* Product Categories Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      white-space: nowrap;
+    }
+    .category-tabs::-webkit-scrollbar { display: none; }
+    .category-tabs { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .category-tab {
+      padding: 6px 12px;
+      border-radius: 16px;
+      background-color: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-color);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all var(--transition-duration);
+      border: 1px solid var(--glass-border);
+    }
+
+    .category-tab:hover,
+    .category-tab.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* MODIFIED: Products Grid for Laptop (Vertical Scroll) */
+    .products-grid-container {
+        overflow-y: auto;
+        max-height: calc(100vh - 260px); /* Adjust height to prevent page scroll */
+        padding-right: 10px; /* Space for scrollbar */
+    }
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Wrapping grid */
+        gap: 15px;
+    }
+
+    .akm-product-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: var(--border-radius);
+      background: var(--card-bg);
+      box-shadow: 0 2px 4px var(--shadow-color);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border-color);
+      position: relative;
+      width: 140px;
+    }
+
+    body.dark-mode .akm-product-card {
+      background-color: var(--glass-bg-dark);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border-dark);
+    }
+
+    .akm-product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 8px var(--shadow-color);
+    }
+
+    .product-image {
+      height: 120px;
+      background-color: rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-emphasis);
+      opacity: 0.8;
+    }
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    body.dark-mode .product-image { background-color: rgba(0, 0, 0, 0.1); }
+    .product-image i { font-size: 2.5rem; }
+
+    .product-details { padding: 10px; text-align: center; }
+    .product-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.9rem;
+      color: var(--text-emphasis);
+    }
+    .product-price {
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    /* Forms */
+    .form-group { margin-bottom: 12px; }
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: var(--text-emphasis);
+      font-size: 0.9rem;
+    }
+    .form-control {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      background-color: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: var(--text-emphasis);
+      transition: border-color var(--transition-duration), box-shadow var(--transition-duration);
+      box-sizing: border-box;
+      font-size: 0.9rem;
+    }
+    
+    /* NEW: CodeMirror Custom Styles for Theme Integration (Goal 2) */
+    .CodeMirror {
+      height: auto !important;
+      min-height: 150px;
+      border-radius: var(--border-radius);
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.95rem; /* Slightly larger */
+    }
+
+    body.dark-mode .CodeMirror {
+      background-color: rgba(0, 0, 0, 0.8) !important;
+      color: #d4d4d4;
+      border: 1px solid var(--glass-border);
+    }
+
+    body.light-mode .CodeMirror {
+      background-color: var(--glass-bg-light) !important;
+      color: var(--text-emphasis-light);
+      border: 1px solid var(--glass-border-light);
+    }
+    
+    .CodeMirror-vscrollbar, .CodeMirror-hscrollbar {
+        z-index: 10 !important; /* Ensure scrollbars are visible */
+    }
+    /* Override monokai dark-mode appearance to match current theme */
+    .cm-s-monokai.CodeMirror {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+    }
+    /* Override monokai token colors to better match the app's colors (Goal 2) */
+    .cm-s-monokai .cm-keyword { color: var(--primary-color) !important; font-weight: bold; }
+    .cm-s-monokai .cm-string { color: var(--success-color) !important; }
+    .cm-s-monokai .cm-comment { color: #888 !important; }
+    .cm-s-monokai .cm-operator { color: var(--warning-color) !important; }
+    .cm-s-monokai .cm-variable { color: var(--text-emphasis) !important; }
+    .cm-s-monokai .cm-number { color: var(--danger-color) !important; }
+
+    /* Light mode CodeMirror adjustments */
+    body.light-mode .cm-s-monokai.CodeMirror {
+         background-color: var(--glass-bg-light) !important;
+    }
+    body.light-mode .cm-s-monokai .cm-keyword { color: var(--primary-color-light) !important; }
+    body.light-mode .cm-s-monokai .cm-string { color: var(--success-color-light) !important; }
+    body.light-mode .cm-s-monokai .cm-comment { color: #888 !important; }
+    body.light-mode .cm-s-monokai .cm-operator { color: var(--warning-color) !important; }
+    body.light-mode .cm-s-monokai .cm-variable { color: var(--text-emphasis-light) !important; }
+    body.light-mode .cm-s-monokai .cm-number { color: var(--danger-color-light) !important; }
+    /* END NEW: SQL Console Styling */
+
+
+    #sql-ai-query {
+        min-height: 40px;
+        resize: vertical;
+    }
+
+
+    select.form-control {
+      appearance: none;
+      /* Using primary color for select arrow */
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007AFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px 10px;
+      padding-right: 30px;
+    }
+    /* Dark mode selector filter for color inversion (simpler than separate SVG) */
+    body.dark-mode select.form-control {
+      filter: none; /* Reset if previously filtered, rely on dark mode specific styles if needed */
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    body.light-mode .form-control:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); } /* Light indigo */
+    body.dark-mode .form-control:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); } /* Light indigo */
+
+    input[type="date"]::-webkit-calendar-picker-indicator { 
+        /* Kept original filter, as it targets a specific visual effect across modes */
+        filter: invert(40%) sepia(88%) saturate(2559%) hue-rotate(231deg) brightness(100%) contrast(104%); 
+    }
+    body.dark-mode input[type="date"]::-webkit-calendar-picker-indicator { 
+        /* Kept original filter, as it targets a specific visual effect across modes */
+        filter: invert(65%) sepia(91%) saturate(1256%) hue-rotate(359deg) brightness(102%) contrast(102%) !important; 
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow-y: auto;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      padding: 15px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-dialog {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); /* Added fixed positioning to enable modal-pop-in */
+      width: 100%;
+      max-width: 450px;
+      background-color: var(--card-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      margin: auto;
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 30px);
+      /* animation: fadeInUp 0.4s ease-out; Removed old animation */
+    }
+    .modal-header {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-emphasis);
+      margin: 0;
+    }
+    .modal-close {
+      background: none; border: none;
+      font-size: 1.5rem; color: var(--text-emphasis);
+      opacity: 0.7; cursor: pointer; padding: 4px; line-height: 1;
+    }
+    .modal-close:hover { opacity: 1; }
+    .modal-body {
+      padding: 15px;
+      overflow-y: auto;
+      color: var(--text-emphasis);
+    }
+    .modal-footer {
+      padding: 12px 15px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    #report-modal .modal-dialog { max-width: 800px; }
+    /* NEW: Delivery Note Print Styles (only visible in print mode) */
+    @media print {
+        body > *:not(#delivery-note-modal):not(.delivery-note-print) { display: none !important; }
+        .delivery-note-print { 
+            display: block !important; 
+            position: absolute; 
+            top: 0; left: 0; 
+            width: 100%; 
+            margin: 0; 
+            padding: 0;
+            background: white; 
+            color: black;
+            font-size: 12pt;
+        }
+        .delivery-note-print .dn-header, .delivery-note-print .dn-section {
+            border: 1px solid black;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        .delivery-note-print .dn-items th, .delivery-note-print .dn-items td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    }
+
+
+    /* Alerts */
+    .alert {
+      padding: 12px 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      font-size: 0.9rem;
+      font-weight: bold;
+    }
+    .alert i { font-size: 1.1rem; }
+    /* Alerts already use var(--color) in rgba, which is correct */
+    body.light-mode .alert-success { background-color: rgba(76, 201, 240, 0.15); color: var(--success-color); border: 1px solid rgba(76, 201, 240, 0.3); }
+    body.dark-mode .alert-success { background-color: rgba(76, 201, 240, 0.2); color: var(--success-color); border-color: rgba(76, 201, 240, 0.3); }
+    body.light-mode .alert-danger { background-color: rgba(247, 37, 133, 0.15); color: var(--danger-color); border-color: rgba(247, 37, 133, 0.3); }
+    body.dark-mode .alert-danger { background-color: rgba(247, 37, 133, 0.2); color: var(--danger-color); border-color: rgba(247, 37, 133, 0.3); }
+    body.light-mode .alert-warning { background-color: rgba(247, 127, 0, 0.15); color: var(--warning-color); border-color: rgba(247, 127, 0, 0.3); }
+    body.dark-mode .alert-warning { background-color: rgba(247, 127, 0, 0.2); color: var(--warning-color); border-color: rgba(247, 127, 0, 0.3); }
+
+    /* Empty State */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 15px;
+      text-align: center;
+      color: var(--text-emphasis);
+      opacity: 0.6;
+      min-height: 150px;
+    }
+    .empty-state i {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      color: var(--border-color);
+    }
+    .empty-state p {
+      font-size: 1rem;
+      margin-bottom: 15px;
+      color: var(--text-color);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      /* MODIFIED: position: fixed, bottom: 0, left: 0, right: 0 to stick it to the bottom */
+      position: fixed; /* Fixed position */
+      bottom: 0;        /* Stick to the bottom */
+      left: 0;          /* Cover the full width */
+      right: 0;         /* Cover the full width */
+      z-index: 95;      /* Must be below sidebar (z-index: 90/110) but above main content */
+      width: 100%;
+      margin-top: auto; /* Remove margin-top auto, replaced by bottom: 0 */
+      padding: 5px 0;
+      font-size: 0.8rem;
+      background-color: var(--card-bg);
+      backdrop-filter: blur(8px); /* Add blur for consistency */
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid var(--glass-border);
+      /* Ensure it doesn't move when the screen is resized (for fixed position) */
+      box-sizing: border-box; 
+    }
+
+    /* Responsive Design */
+   /* Responsive Design */
+@media (max-width: 991.98px) {
+  .sidebar { transform: translateX(-100%); z-index: 110; }
+  .sidebar.show { transform: translateX(0); }
+  .main-content { margin-left: 0; }
+  .main-content-collapsed { margin-left: 0; }
+  /* FIX 1: Ensure body.sidebar-open sets the overlay */
+  /* body.sidebar-open::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 105;
+  } */ /* REMOVED: Dimming overlay in mobile view to prevent surface blockage */
+}
+
+    @media (max-width: 767.98px) {
+      /* FIX 1: Enforce 1 column for all stats and insights on mobile for better readability */
+      .stats-grid, .insights-grid { 
+          grid-template-columns: 1fr !important; 
+      }
+      .order-details { margin-top: 15px; min-height: auto; }
+      .akm-card { padding: 12px; }
+      .akm-card-title { font-size: 1rem; }
+      .akm-btn { padding: 6px 12px; font-size: 0.8rem; }
+      .akm-product-card { 
+          font-size: 0.8rem; 
+          width: 120px; /* UPDATED: smaller card width */
+      }
+      .product-image { 
+          height: 100px; /* UPDATED: smaller image height */
+      }
+      .product-image i { font-size: 1.5rem; }
+      .table th, .table td { padding: 8px 10px; }
+      .table .akm-btn { padding: 4px 6px; font-size: 0.7rem; }
+      .footer { display: none; } /* Hide original footer on mobile */
+      .row .col-md-6 { margin-bottom: 15px; }
+      .row .col-md-6:last-child { margin-bottom: 0; }
+      /* SQL Lab: Stack schema viewer on top */
+      #sql-lab-section .col-md-3 { margin-bottom: 15px; }
+      /* BI Filter Fix for mobile */
+      #sales-analysis-section .filter-controls,
+      #customer-analysis-section .filter-controls,
+      #product-analysis-section .filter-controls,
+      #bi-dashboard-section .filter-controls { /* NEW: Include BI Dashboard */
+          flex-direction: column;
+          align-items: stretch;
+      }
+      #sales-analysis-section .filter-controls > *,
+      #customer-analysis-section .filter-controls > *,
+      #product-analysis-section .filter-controls > *,
+      #bi-dashboard-section .filter-controls > * { /* NEW: Include BI Dashboard */
+           flex-basis: 100% !important;
+           width: 100% !important;
+      }
+
+
+      /* MODIFIED: Mobile responsive products grid with horizontal scroll and 3 rows */
+      .products-grid-container {
+          overflow-x: auto; /* Enable horizontal scroll */
+          overflow-y: hidden;
+          padding-bottom: 15px;
+          max-height: none; /* Reset max-height for mobile horizontal scroll */
+      }
+      .products-grid {
+          display: grid;
+          grid-auto-flow: column; /* Make items flow horizontally */
+          grid-template-rows: repeat(3, 1fr); /* UPDATED: Changed from 2 to 3 rows */
+          grid-template-columns: none; /* Reset template columns */
+          gap: 15px;
+          padding-right: 15px; /* Add some padding at the end of the scroll */
+      }
+      /* MODIFIED: Dynamic Nav needs to be flex on mobile */
+      .dynamic-nav {
+          display: flex; /* Show new dynamic nav on mobile */
+      }
+      .main-content {
+          padding-bottom: 85px; /* Add more padding to prevent content from being hidden by bottom nav */
+      }
+      .toast-container {
+        top: 70px;
+        right: 10px;
+        max-width: 300px;
+      }
+      .toast {
+        max-width: 300px;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      .header { padding: 0 10px; }
+      .logo { font-size: 1rem; }
+      .logo i { font-size: 1.2rem; }
+      .header-actions { gap: 8px; }
+      /* MODAL UI FIX: Tighter max-width for small screens */
+      .modal-dialog { max-width: calc(100% - 60px); margin: 15px auto; }
+      #report-modal .modal-dialog { max-width: calc(100% - 30px); }
+      .table th, .table td { padding: 6px 8px; font-size: 0.8rem; }
+      .table .akm-btn { padding: 4px 6px; font-size: 0.7rem; }
+      .product-image { height: 80px; } /* Further adjustment for very small screens */
+      .product-details { padding: 8px; }
+      .product-name, .product-price { font-size: 0.8rem; }
+      .stat-value { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 480px) {
+      /* FIX 1: Dashboard Stats - Two columns in 480px */
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+      }
+      /* FIX 4: Analytics Card Compactness (Copied from UAS test02.html) */
+      .insight-card {
+          padding: 12px; /* Smaller padding */
+      }
+      .insight-title {
+          font-size: 0.9rem; /* Smaller title */
+      }
+      .insight-value { 
+          font-size: 1.5rem; /* FIXED: Reduced from 1.8rem for better fit on smallest mobile */
+      }
+      .insight-icon-right {
+          width: 32px;
+          height: 32px;
+      }
+      .insight-icon-right i {
+          font-size: 1.2rem;
+      }
+      .insight-desc { 
+          font-size: 0.7rem; /* Smaller description */
+      }
+      .akm-product-card {
+          width: 110px; /* Further adjustment */
+      }
+    .products-grid {
+          display: grid;
+          grid-auto-flow: column; /* Make items flow horizontally */
+          grid-template-rows: repeat(3, 1fr); /* UPDATED: Changed from 2 to 3 rows */
+          gap: 5px;
+          padding-right: none; /* Add some padding at the end of the scroll */
+      }
+    }
+    
+    /* AI Response Box */
+    .ai-response-box {
+        background: rgba(0,0,0,0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        min-height: 100px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        color: var(--text-emphasis);
+    }
+    
+    /* NEW: AI Analytics Specific Styles */
+    .ai-query-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    #ai-user-query {
+        flex-grow: 1;
+        resize: vertical;
+        min-height: 60px;
+    }
+    
+    /* MODIFIED: Ensure SQL and AI Result containers have max-height and scrolling for sticky headers */
+    .ai-result-container, #sql-result-container {
+        margin-top: 20px;
+        min-height: 200px;
+        border: 1px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        padding: 15px;
+        background-color: var(--glass-bg);
+        overflow-x: auto;
+        max-height: 400px; /* Added for sticky header */
+        overflow-y: auto; /* Added for sticky header */
+    }
+    /* END MODIFIED */
+    
+    .ai-summary-text {
+        margin-top: 15px;
+        /* Removed padding and border-left from here as it's now wrapped in ai-insight-box */
+        font-style: italic; /* Kept for structure */
+        line-height: 1.5;
+        color: var(--text-color);
+    }
+    
+    /* NEW: Styles for AI Insight Hierarchy (Decision Support) */
+    .ai-insight-box {
+        padding: 15px;
+        border-radius: var(--border-radius);
+        margin-bottom: 10px;
+        border-left: 5px solid var(--primary-color);
+        background-color: var(--card-bg);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        transition: all 0.3s;
+    }
+    .ai-insight-box:hover {
+        transform: translateY(-2px);
+    }
+    .ai-insight-box h5 {
+        color: var(--text-emphasis);
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ai-insight-box .insight-badge {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    /* Custom level colors */
+    .insight-level-basic { background-color: rgba(76, 201, 240, 0.2); color: var(--success-color); }
+    .insight-level-advanced { background-color: rgba(247, 127, 0, 0.2); color: var(--warning-color); }
+    .insight-level-deep { background-color: rgba(247, 37, 133, 0.2); color: var(--danger-color); }
+    /* END NEW: Styles for AI Insight Hierarchy */
+
+    /* Dynamic table style for AI result */
+    .ai-result-container table,
+    #sql-result-container table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap; /* Ensure table fits content dynamically */
+    }
+    .ai-result-container th, .ai-result-container td,
+    #sql-result-container th, #sql-result-container td {
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        text-align: left;
+    }
+    .ai-result-container th,
+    #sql-result-container th {
+        background-color: var(--primary-color);
+        color: white;
+        font-weight: 600;
+        cursor: pointer; /* Enable sorting */
+    }
+
+
+    /* --- NEW & UPDATED STYLES --- */
+    /* Search & Filter Controls */
+    .filter-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .search-box {
+      position: relative;
+      flex-grow: 1;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 15px 10px 35px;
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border-color);
+      background-color: var(--glass-bg);
+      color: var(--text-emphasis);
+      box-sizing: border-box;
+    }
+    .search-box i.fa-search {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-color);
+    }
+    .barcode-scan-btn {
+        padding: 10px;
+        font-size: 1rem;
+        line-height: 1;
+        margin-left: 5px;
+    }
+    #barcode-scanner-container {
+        max-width: 100%;
+        margin-top: 10px;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        display: none;
+    }
+
+
+    #product-category-filter, #stock-category-filter, .purchase-filter, #order-status-filter {
+      flex-basis: 150px; /* Adjusted basis for smaller elements */
+      flex-grow: 1;
+    }
+    .purchase-filter-group, .order-filter-group { /* MODIFIED: Added order-filter-group */
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px; /* Reduced gap for filter groups */
+        align-items: center;
+        margin-left: auto;
+    }
+
+    /* Customer Select in POS */
+    .customer-select-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color);
+        position: relative; /* NEW: for search results positioning */
+    }
+    .customer-select-group .form-control {
+        flex-grow: 1;
+    }
+
+    /* MODIFIED: POS Customer Search Results (M1) */
+    #pos-customer-search-results {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: var(--glass-bg); /* MODIFIED for glass bg */
+        backdrop-filter: blur(10px); /* ADDED for glass effect */
+        -webkit-backdrop-filter: blur(10px); /* ADDED */
+        border: 1px solid var(--border-color);
+        border-top: none;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        z-index: 100;
+    }
+    #pos-customer-search-results .result-item {
+        padding: 10px;
+        cursor: pointer;
+    }
+    #pos-customer-search-results .result-item:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    /* END MODIFIED: POS Customer Search Results */
+
+
+    /* Product Image Upload */
+    .image-upload-container {
+        margin-top: 10px;
+        position: relative;
+    }
+    #product-image-preview {
+        width: 100%;
+        height: 150px;
+        border-radius: var(--border-radius);
+        object-fit: cover;
+        border: 2px dashed var(--border-color);
+        cursor: pointer;
+    }
+    #remove-image-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+
+    /* Product Table Image */
+    .product-table-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .product-table-image:hover {
+        transform: scale(1.1);
+    }
+
+    /* Full-size Image Viewer Modal */
+    #image-viewer-modal .modal-dialog {
+        max-width: 80vw;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+    #full-size-image {
+        max-width: 100%;
+        max-height: 80vh;
+        border-radius: var(--border-radius);
+    }
+
+
+    /* Disabled product akm-card */
+    .akm-product-card.disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    /* Disabled product color already uses var(--color) in rgba, which is correct */
+    .akm-product-card.disabled .product-image {
+      background-color: rgba(247, 37, 133, 0.1); /* Light pink/magenta */
+    }
+    .akm-product-card.disabled .product-price {
+      color: var(--danger-color);
+    }
+
+    /* Out of stock label */
+    .out-of-stock {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(247, 37, 133, 0.8); /* Pink/magenta */
+      color: white;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+    }
+
+    /* Receipt Modal */
+    #receipt-modal .modal-dialog {
+        max-width: 400px;
+    }
+    #receipt-content {
+        padding: 20px;
+        font-family: 'Courier New', Courier, monospace;
+        color: var(--text-emphasis);
+        background-color: var(--chart-bg); /* Use the new chart-bg variable */
+    }
+    #receipt-content h4 {
+        text-align: center;
+        margin-top: 0;
+        color: var(--primary-color);
+    }
+    #receipt-content p {
+        font-size: 0.8rem;
+        margin: 2px 0;
+    }
+    #receipt-content .receipt-divider {
+        border-top: 1px dashed var(--text-color);
+        margin: 10px 0;
+    }
+    #receipt-content table {
+        width: 100%;
+        font-size: 0.8rem;
+    }
+    #receipt-content th, #receipt-content td {
+        padding: 2px;
+    }
+    #receipt-content .text-right {
+        text-align: right;
+    }
+    #receipt-content .total-section {
+        margin-top: 10px;
+        font-weight: bold;
+    }
+    #receipt-content .footer-text {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 0.7rem;
+    }
+
+    /* UPDATE: Style for stock threshold input */
+    .stock-threshold-input {
+        max-width: 80px;
+        padding: 5px 8px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+    .scrollable-chart-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .monthly-chart-wrapper {
+        position: relative;
+        min-width: 600px;
+    }
+    
+    /* WAREHOUSE POS: Quantity Input Style */
+    .pos-qty-input {
+        width: 60px !important;
+        padding: 5px;
+        text-align: center;
+        font-size: 0.9rem;
+    }
+
+
+    /* --- NEW: Dynamic Island Bottom Navigation --- */
+    .dynamic-nav {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        
+        /* Glassmorphism Base */
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        
+        box-shadow: 0 10px 30px var(--shadow-color);
+        border-radius: 50px;
+        
+        /* Animation Props */
+        transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    border-radius 0.3s,
+                    background-color 0.3s;
+        
+        overflow: hidden;
+        display: none; /* Hidden by default on desktop */
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Closed State (Small Circle/Pill) */
+    .dynamic-nav.collapsed {
+        width: 60px;
+        height: 60px;
+        cursor: pointer;
+        background: var(--glass-bg); /* Darker initial state */
+        border: 1px solid var(--glass-border); /* FIXED: Added border for consistency */
+    }
+    
+    /* Expanded State (Full Nav) */
+    .dynamic-nav.expanded {
+        width: 90%;
+        max-width: 450px;
+        height: 60px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+    }
+
+    /* Visual Handle for Collapsed State */
+    .nav-handle {
+        width: 25px;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 2px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: opacity 0.3s, transform 0.3s;
+    }
+    
+    .dynamic-nav.expanded .nav-handle {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+
+    /* Navigation Content */
+    .nav-content {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        pointer-events: none; /* Prevent clicks when hidden */
+        transition: opacity 0.3s ease-in-out;
+        padding: 0 10px;
+    }
+
+    .dynamic-nav.expanded .nav-content {
+        opacity: 1;
+        pointer-events: auto;
+        transition-delay: 0.1s; /* Wait for expansion */
+    }
+
+    .bottom-nav-link {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-color);
+        text-decoration: none;
+        font-size: 0.7rem;
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        transition: all 0.2s ease-out;
+    }
+
+    .bottom-nav-link i {
+        font-size: 1.3rem;
+        margin-bottom: 2px;
+    }
+
+    .bottom-nav-link.active {
+        color: white;
+        background: var(--primary-color);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    
+    @media (max-width: 767.98px) {
+        .dynamic-nav {
+            display: flex; /* Show new dynamic nav on mobile */
+        }
+        .main-content {
+            padding-bottom: 85px; /* Add space for the bottom nav */
+        }
+    }
+    /* --- END DYNAMIC ISLAND STYLES --- */
+    
+    /* AI Response Box - ADDED BACK */
+    .ai-response-box {
+        background: rgba(0,0,0,0.1);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        min-height: 100px;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        color: var(--text-emphasis);
+    }
+
+    /* --- NEW AI DATA ASSISTANT STYLES --- */
+    #ai-assistant-card {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - var(--header-height) - 30px); /* Full height minus header and padding */
+        max-height: 800px; /* Max height for desktop view */
+        margin-top: 15px;
+    }
+
+    #chat-history {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-bottom: 1px solid var(--border-color);
+        min-height: 200px;
+    }
+
+    .chat-message {
+        max-width: 80%;
+        padding: 10px;
+        border-radius: 10px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        white-space: pre-wrap; /* Preserve formatting for AI responses */
+    }
+
+    .user-message {
+        align-self: flex-end;
+        background-color: var(--primary-color);
+        color: white;
+    }
+
+    .ai-message {
+        align-self: flex-start;
+        background-color: var(--card-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-emphasis);
+        box-shadow: 0 2px 4px var(--shadow-color);
+    }
+    .ai-message strong {
+        color: var(--primary-color);
+        font-weight: 600;
+    }
+
+    #ai-input-container {
+        display: flex;
+        padding-top: 15px;
+        gap: 10px;
+    }
+
+    #ai-query-input {
+        flex-grow: 1;
+        font-size: 1rem;
+    }
+
+    /* NEW: Process Mining Styles */
+    .process-step {
+         font-size: 0.9rem;
+         padding: 8px 10px;
+         border-radius: 8px;
+         background-color: var(--glass-bg);
+         border: 1px solid var(--border-color);
+         margin-bottom: 10px;
+         display: flex;
+         justify-content: space-between;
+    }
+    .process-step strong {
+         color: var(--primary-color);
+    }
+    /* END NEW: Process Mining Styles */
+
+    /* NEW: Visual SQL Builder Styles */
+    #visual-sql-builder {
+        padding: 15px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        margin-bottom: 20px;
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+    #visual-sql-builder .form-group {
+        margin-bottom: 10px;
+    }
+    .column-list-group {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        max-height: 150px;
+        overflow-y: auto;
+        padding: 5px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+    }
+    .column-list-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 400;
+        cursor: pointer;
+        font-size: 0.9rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* END NEW: Visual SQL Builder Styles */
+
+
+    /* NEW: Data Quality Assurance Styles */
+    .dq-issue-card {
+        padding: 15px;
+        border-radius: var(--border-radius);
+        border-left: 5px solid var(--danger-color);
+        background-color: var(--card-bg);
+        box-shadow: 0 2px 8px var(--shadow-color);
+        margin-bottom: 10px;
+    }
+    .dq-issue-card h5 {
+        color: var(--danger-color);
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+    .dq-issue-card .count {
+         font-size: 1.5rem;
+         font-weight: 700;
+         color: var(--text-emphasis);
+         margin-right: 10px;
+    }
+    /* END NEW: Data Quality Assurance Styles */
+
+  /* NEW: OPI Score Styles */
+.opi-score-card {
+    padding: 20px;
+    text-align: center;
+    border-left: 5px solid var(--primary-color);
+    background: var(--card-bg);
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all var(--transition-duration);
+}
+.opi-score-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 10px 0;
+    color: var(--primary-color);
+}
+.opi-summary {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+.opi-sub-score-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    background-color: var(--glass-bg);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: all var(--transition-duration);
+}
+.opi-sub-score-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-top: 5px;
+}
+.opi-sub-score-title {
+    font-size: 0.85rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+/* Conditional colors for sub-scores */
+.opi-sub-score-value.good { color: var(--success-color); }
+.opi-sub-score-card.good { border-left-color: var(--success-color); }
+.opi-sub-score-value.warning { color: var(--warning-color); }
+.opi-sub-score-card.warning { border-left-color: var(--warning-color); }
+.opi-sub-score-value.danger { color: var(--danger-color); }
+.opi-sub-score-card.danger { border-left-color: var(--danger-color); }
+/* END NEW: OPI Score Styles */
+
+
+/* ... (Existing general styles like .insights-grid, .akm-card-title etc.) ... */
+
+
+/* NEW: Resource Flow Optimization Styles (Process Mining COO Feature) */
+.resource-recommendation {
+    padding: 15px;
+    border-left: 5px solid var(--secondary-color);
+    background-color: rgba(94, 92, 230, 0.1); /* Light tint of secondary color */
+    border-radius: var(--border-radius);
+    margin-top: 15px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+.resource-recommendation h5 {
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.resource-recommendation p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+.resource-recommendation strong {
+    color: var(--text-emphasis);
+}
+/* END NEW: Resource Flow Optimization Styles */
+
+
+/* MODIFIED: Ensure OPI Dashboard Title is correctly sized */
+#opi-dashboard-section .akm-card-title {
+    font-size: 1.4rem; 
+    gap: 10px;
+}
+
+/* MODIFIED: Mobile responsive filter for OPI dashboard */
+@media (max-width: 767.98px) {
+    #opi-dashboard-section .filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #opi-dashboard-section .filter-controls > * {
+         flex-basis: 100% !important;
+         width: 100% !important;
+    }
+}
+
+/* NEW FEATURE 1: Warehouse Map Styles */
+.warehouse-map-container {
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    background-color: var(--glass-bg);
+    margin-top: 20px;
+}
+.warehouse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); /* 60px minimum width for rack cells */
+    gap: 5px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    max-height: 400px;
+    overflow-y: auto;
+}
+.rack-cell {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 4px;
+    text-align: center;
+    cursor: default;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--text-emphasis);
+    overflow: hidden;
+}
+.rack-cell:hover {
+    transform: scale(1.05);
+    z-index: 5;
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+/* Color Coding */
+.rack-empty { background-color: rgba(76, 201, 240, 0.3); color: var(--text-emphasis); border-color: var(--success-color); } /* Light Cyan/Success */
+.rack-low { background-color: rgba(247, 127, 0, 0.4); color: var(--text-emphasis); border-color: var(--warning-color); } /* Light Orange/Warning */
+.rack-full { background-color: rgba(0, 122, 255, 0.4); color: var(--text-emphasis); border-color: var(--primary-color); } /* Light Blue/Primary */
+.rack-critical { background-color: rgba(247, 37, 133, 0.5); color: var(--text-emphasis); border-color: var(--danger-color); } /* Pink/Danger */
+
+/* Tooltip (Invisible by default, shown on hover) */
+.rack-cell::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-bg);
+    color: var(--text-emphasis);
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    white-space: pre-wrap;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 2px 5px var(--shadow-color);
+    min-width: 150px;
+    text-align: left;
+}
+.rack-cell:hover::after {
+    opacity: 1;
+}
+/* END NEW FEATURE 1: Warehouse Map Styles */
